@@ -2,8 +2,7 @@
 
 import { Bell, KanbanSquare, LogOut, Radar, Search, Settings, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { supabaseNavegador } from "@/lib/supabase/client";
+import { abrirAcesso, sair, useSessao } from "@/lib/sessao";
 import Link from "next/link";
 import { useCrm } from "@/lib/crm";
 import { Popover, cx } from "./ui";
@@ -52,45 +51,61 @@ export function TopNav({ pagina }: { pagina: (typeof PAGINAS)[number]["id"] }) {
       </nav>
 
       <div className="ml-auto flex items-center gap-2">
-        <button type="button" aria-label="Notificações" className="grid size-11 place-items-center rounded-full border border-white/90 bg-white/70">
-          <Bell className="size-4" />
-        </button>
-        <button type="button" aria-label="Configurações" className="grid size-11 place-items-center rounded-full border border-white/90 bg-white/70">
-          <Settings className="size-4" />
-        </button>
+        <BotoesConta />
         <MenuUsuario />
       </div>
     </header>
   );
 }
 
+function BotoesConta() {
+  const { usuario } = useSessao();
+  if (!usuario) return null;
+  return (
+    <>
+        <button type="button" aria-label="Notificações" className="grid size-11 place-items-center rounded-full border border-white/90 bg-white/70">
+          <Bell className="size-4" />
+        </button>
+        <button type="button" aria-label="Configurações" className="grid size-11 place-items-center rounded-full border border-white/90 bg-white/70">
+          <Settings className="size-4" />
+        </button>
+    </>
+  );
+}
+
 function MenuUsuario() {
   const router = useRouter();
-  const [usuario, setUsuario] = useState<{ email: string; nome: string } | null>(null);
-  useEffect(() => {
-    supabaseNavegador().auth.getUser().then(({ data }) => {
-      const u = data.user;
-      if (u) setUsuario({ email: u.email ?? "", nome: (u.user_metadata?.nome as string) || (u.email ?? "").split("@")[0] });
-    });
-  }, []);
-  const sair = async () => {
-    await supabaseNavegador().auth.signOut();
-    router.replace("/entrar");
+  const { usuario, carregado } = useSessao();
+
+  if (!carregado) return <span className="size-11 rounded-full bg-white/60" />;
+  if (!usuario) {
+    return (
+      <div className="flex items-center gap-2">
+        <button type="button" onClick={() => abrirAcesso("entrar")}
+          className="h-11 rounded-full border border-white/90 bg-white/70 px-4 text-sm hover:bg-white">Entrar</button>
+        <button type="button" onClick={() => abrirAcesso("criar")}
+          className="h-11 rounded-full bg-lime px-4 text-sm font-medium text-ink hover:bg-lime-deep">Criar conta grátis</button>
+      </div>
+    );
+  }
+
+  const deslogar = async () => {
+    await sair();
     router.refresh();
   };
-  const inicial = (usuario?.nome || "?").trim().charAt(0).toUpperCase();
+  const inicial = (usuario.nome || "?").trim().charAt(0).toUpperCase();
   return (
     <Popover
-      rotulo={<span className="hidden max-w-[120px] truncate sm:inline">{usuario?.nome ?? "Conta"}</span>}
+      rotulo={<span className="hidden max-w-[120px] truncate sm:inline">{usuario.nome}</span>}
       icone={<span className="grid size-7 place-items-center rounded-full bg-steel text-xs font-semibold text-white">{inicial}</span>}
       largura={260}
       alinhar="direita"
     >
       <div className="px-3 py-2">
-        <p className="truncate text-sm font-medium">{usuario?.nome}</p>
-        <p className="truncate text-xs text-muted">{usuario?.email}</p>
+        <p className="truncate text-sm font-medium">{usuario.nome}</p>
+        <p className="truncate text-xs text-muted">{usuario.email}</p>
       </div>
-      <button type="button" onClick={sair}
+      <button type="button" onClick={deslogar}
         className="mt-1 flex w-full items-center gap-2 rounded-2xl px-3 py-2 text-left text-sm hover:bg-white/80">
         <LogOut className="size-4" /> Sair
       </button>

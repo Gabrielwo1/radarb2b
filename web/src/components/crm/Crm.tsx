@@ -2,8 +2,9 @@
 
 import { AlarmClock, CalendarClock, KanbanSquare, Plus, Search, Trophy, X } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { ETAPAS, type EtapaId, type Lead, atualizarLead, useCrm } from "@/lib/crm";
+import { useEffect, useMemo, useState } from "react";
+import { abrirAcesso, useSessao } from "@/lib/sessao";
+import { ETAPAS, type EtapaId, type Lead, atualizarLead, recarregarCrm, useCrm } from "@/lib/crm";
 import { ehCelular, escala, linkWhatsApp, iniciais, moeda, nomeProprio, porcentagem, tom } from "@/lib/formato";
 import { tituloCidade } from "../Filtros";
 import { TopNav } from "../TopNav";
@@ -16,6 +17,14 @@ const ABERTAS: EtapaId[] = ["novo", "contato", "qualificado", "proposta", "negoc
 
 export function Crm() {
   const { leads, carregado } = useCrm();
+  const sessao = useSessao();
+  // Visitante: o funil é da conta, então abre o pop-up de acesso direto
+  useEffect(() => {
+    if (sessao.carregado && !sessao.usuario) abrirAcesso("criar", "Crie sua conta grátis para organizar seus leads no CRM");
+  }, [sessao.carregado, sessao.usuario]);
+  useEffect(() => {
+    if (sessao.usuario) recarregarCrm().catch(() => {});
+  }, [sessao.usuario]);
   const [busca, setBusca] = useState("");
   const [soFollowUp, setSoFollowUp] = useState(false);
   const [aberto, setAberto] = useState<string | null>(null);

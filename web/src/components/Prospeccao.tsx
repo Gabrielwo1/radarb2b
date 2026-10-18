@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { type Busca, type Empresa, type PontoMapa, type Resumo as TResumo, type Stats, urlApi, useApi } from "@/lib/api";
 import { type Aba, UF_PADRAO, contarFiltros, lista, queryApi } from "@/lib/filtros";
 import { useBuscasSalvas, useLocal, useSalvos } from "@/lib/local";
+import { exigirLogin, useSessao } from "@/lib/sessao";
 import { adicionarAoCrm, useEtapasCrm } from "@/lib/crm";
 import { ehCelular, linkWhatsApp } from "@/lib/formato";
 import { Assistente } from "./Assistente";
@@ -33,16 +34,20 @@ export function Prospeccao() {
   const uf = sp.get("uf") ?? UF_PADRAO;
   const { salvos, alternar, ehSalvo } = useSalvos();
   const [filtrosAbertos, setFiltrosAbertos] = useLocal("radar:painel-filtros", false);
+  const { usuario, carregado } = useSessao();
+  const logado = !!usuario;
 
+  // Visitante navega livre; qualquer mudança de filtro/aba/ordem pede login antes (e é aplicada depois)
   const definir = useCallback(
-    (mudancas: Record<string, string | null>) => {
-      const q = new URLSearchParams(sp);
-      for (const [k, v] of Object.entries(mudancas)) {
-        if (v === null || v === "") q.delete(k);
-        else q.set(k, v);
-      }
-      router.replace(q.size ? `${pathname}?${q}` : pathname, { scroll: false });
-    },
+    (mudancas: Record<string, string | null>) =>
+      exigirLogin(() => {
+        const q = new URLSearchParams(sp);
+        for (const [k, v] of Object.entries(mudancas)) {
+          if (v === null || v === "") q.delete(k);
+          else q.set(k, v);
+        }
+        router.replace(q.size ? `${pathname}?${q}` : pathname, { scroll: false });
+      }, "Crie sua conta grátis para filtrar as empresas"),
     [sp, router, pathname],
   );
 
@@ -78,8 +83,8 @@ export function Prospeccao() {
   const listaQ = new URLSearchParams(apiQ);
   listaQ.set("ordem", ordem);
   listaQ.set("page", String(pagina));
-  listaQ.set("limit", String(POR_PAGINA));
-  const busca = useApi<Busca>(semSalvos ? null : urlApi("empresas", listaQ));
+  listaQ.set("limit", String(logado ? POR_PAGINA : 3)); // visitante vê uma prévia de 3
+  const busca = useApi<Busca>(semSalvos || !carregado ? null : urlApi("empresas", listaQ));
   useEffect(() => {
     if (!busca.dados) return;
     const novos = busca.dados.resultados;
@@ -90,7 +95,8 @@ export function Prospeccao() {
   const fecharDetalhe = useCallback(() => setSelecionado(null), []);
   // CRM: adicionar em massa/individual e WhatsApp (abre a conversa e move para "Em contato")
   const etapasCrm = useEtapasCrm();
-  const enviarAoCrm = async (cnpjs: string[]) => {
+  const enviarAoCrm = (cnpjs: string[]) => exigirLogin(() => adicionar(cnpjs), "Crie sua conta para montar seu funil de vendas");
+  const adicionar = async (cnpjs: string[]) => {
     try {
       const n = await adicionarAoCrm(cnpjs, { origem: "prospeccao" });
       avisar(n === 1 ? "Empresa adicionada ao CRM em Novos" : `${n} empresas adicionadas ao CRM`, { rotulo: "Ver CRM", href: "/crm" });
@@ -98,7 +104,9 @@ export function Prospeccao() {
       avisar(`Não foi possível adicionar: ${(e as Error).message}`);
     }
   };
-  const chamarWhatsApp = (e: { cnpj: string; telefone1: string | null; telefone2?: string | null }) => {
+  const chamarWhatsApp = (e: { cnpj: string; telefone1: string | null; telefone2?: string | null }) =>
+    exigirLogin(() => abrirWhatsApp(e), "Crie sua conta para chamar no WhatsApp");
+  const abrirWhatsApp = (e: { cnpj: string; telefone1: string | null; telefone2?: string | null }) => {
     const celular = [e.telefone1, e.telefone2].find(ehCelular);
     if (!celular) return;
     window.open(linkWhatsApp(celular), "_blank", "noopener");
@@ -108,7 +116,8 @@ export function Prospeccao() {
   };
 
   const salvar = (e: Empresa) =>
-    alternar({ cnpj: e.cnpj, nome: e.nome_fantasia || e.razao_social || e.cnpj, municipio: e.municipio });
+    exigirLogin(() => alternar({ cnpj: e.cnpj, nome: e.nome_fantasia || e.razao_social || e.cnpj, municipio: e.municipio }), "Crie sua conta para salvar empresas");
+  const exportar = () => exigirLogin(() => { window.location.href = urlExportar; }, "Crie sua conta para exportar a lista");
 
   const exportarQ = new URLSearchParams(apiQ);
   const urlExportar = urlApi("exportar", exportarQ);
@@ -129,9 +138,9 @@ export function Prospeccao() {
         </div>
         <div className="flex items-center gap-2">
           <BuscasSalvas query={sp.toString()} onAplicar={(q) => router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false })} />
-          <a href={urlExportar} className="flex h-11 items-center gap-2 rounded-full bg-ink px-5 text-sm text-white hover:bg-coal-2">
+          <button type="button" onClick={exportar} className="flex h-11 items-center gap-2 rounded-full bg-ink px-5 text-sm text-white hover:bg-coal-2">
             <Download className="size-4" /> Exportar CSV
-          </a>
+          </button>
         </div>
       </div>
 
@@ -165,13 +174,14 @@ export function Prospeccao() {
         total={semSalvos ? 0 : busca.dados?.total ?? null}
         empresas={semSalvos ? [] : itens}
         carregando={busca.carregando}
-        temMais={!!busca.dados && itens.length < busca.dados.total}
+        temMais={logado && !!busca.dados && itens.length < busca.dados.total}
+        bloqueado={carregado && !logado}
         onMais={() => setPagina((p) => p + 1)}
         selecionado={selecionado}
-        onSelecionar={setSelecionado}
+        onSelecionar={(c) => (c ? exigirLogin(() => setSelecionado(c), "Crie sua conta para ver telefone, e-mail e endereço") : setSelecionado(null))}
         ordem={ordem}
         onOrdem={(o) => definir({ ordem: o === "nome" ? null : o })}
-        urlExportar={urlExportar}
+        onExportar={exportar}
         ehSalvo={ehSalvo}
         onSalvar={salvar}
         totalSalvos={salvos.length}
@@ -203,7 +213,7 @@ function BuscasSalvas({ query, onAplicar }: { query: string; onAplicar: (q: stri
       {(fechar) => (
         <>
           <form
-            onSubmit={(e) => { e.preventDefault(); if (nome.trim()) { salvar(nome.trim(), query); setNome(""); } }}
+            onSubmit={(e) => { e.preventDefault(); if (nome.trim()) exigirLogin(() => { salvar(nome.trim(), query); setNome(""); }, "Crie sua conta para salvar buscas"); }}
             className="flex h-11 items-center gap-1 rounded-full border border-white bg-white/80 pl-4 pr-1"
           >
             <input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome da busca atual"

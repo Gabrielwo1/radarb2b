@@ -3,6 +3,7 @@
 import { ArrowUp, Loader2, MapPin, Shapes, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
 import { escala } from "@/lib/formato";
+import { exigirLogin } from "@/lib/sessao";
 import { tituloCidade } from "./Filtros";
 import { cx } from "./ui";
 
@@ -29,8 +30,12 @@ export function Assistente({ uf, total, onAplicar, abaixo }: {
   const [enviando, setEnviando] = useState(false);
   const campo = useRef<HTMLTextAreaElement>(null);
 
-  const enviar = async (pergunta: string) => {
+  const enviar = (pergunta: string) => {
     if (!pergunta.trim() || enviando) return;
+    exigirLogin(() => buscar(pergunta), "Crie sua conta grátis para buscar empresas");
+  };
+
+  const buscar = async (pergunta: string) => {
     const id = Date.now();
     setTrocas((t) => [...t.slice(-2), { id, pergunta }]);
     setTexto("");

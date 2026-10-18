@@ -19,8 +19,8 @@ const mascararNome = (n: string | null) =>
 const mascararFone = (t: string | null) => (t ? `${t.slice(0, 3)}••••${t.slice(-2)}` : t);
 type Linha = Record<string, unknown>;
 function anonimizar(corpo: { resultados?: Linha[] }) {
-  corpo.resultados = (corpo.resultados ?? []).map((e) => ({
-    cnpj: "", uf: e.uf, municipio: e.municipio, cnae_principal: e.cnae_principal, cnae_descricao: e.cnae_descricao,
+  corpo.resultados = (corpo.resultados ?? []).map((e, i) => ({
+    cnpj: `oculto-${i}`, uf: e.uf, municipio: e.municipio, cnae_principal: e.cnae_principal, cnae_descricao: e.cnae_descricao,
     razao_social: mascararNome(e.razao_social as string | null), nome_fantasia: mascararNome(e.nome_fantasia as string | null),
     telefone1: mascararFone(e.telefone1 as string | null), porte: e.porte, situacao: e.situacao,
   }));

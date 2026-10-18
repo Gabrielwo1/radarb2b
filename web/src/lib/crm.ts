@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useSyncExternalStore } from "react";
+import { useSessao } from "./sessao";
 import { supabaseNavegador } from "./supabase/client";
 
 export type EtapaId = "novo" | "contato" | "qualificado" | "proposta" | "negociacao" | "ganho" | "perdido";
@@ -117,9 +118,11 @@ export function useCrm() {
     () => leads,
     () => leads,
   );
+  // Recarrega ao entrar/sair da conta (cada usuário tem o seu funil)
+  const { versao } = useSessao();
   useEffect(() => {
-    if (!carregado && !carregando) recarregarCrm().catch(() => {});
-  }, []);
+    if (versao > 0 || (!carregado && !carregando)) recarregarCrm().catch(() => {});
+  }, [versao]);
   return { leads: lista, carregado };
 }
 

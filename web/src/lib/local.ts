@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useSessao } from "./sessao";
 import { supabaseNavegador } from "./supabase/client";
 
 // Persistência local (MVP). Depois migra para o Supabase com login.
@@ -52,14 +53,15 @@ function criarStore<T>(carregar: () => Promise<T[]>) {
   const recarregar = () => (pedido ??= carregar().then(definir).catch(() => {}).finally(() => { pedido = null; }));
   function useStore() {
     const [lista, setLista] = useState(itens);
+    const { versao } = useSessao();
     useEffect(() => {
       const f = () => setLista(itens);
       ouvintes.add(f);
-      recarregar();
+      recarregar(); // também ao entrar/sair da conta
       return () => {
         ouvintes.delete(f);
       };
-    }, []);
+    }, [versao]);
     return lista;
   }
   return { useStore, get: () => itens, definir, recarregar };

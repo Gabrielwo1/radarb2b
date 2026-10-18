@@ -121,6 +121,7 @@ export function MapaCalor({ pontos, selecionadas, onCidade, uf }: {
     return () => {
       m.remove();
       mapa.current = null;
+      setPronto(false); // o próximo mapa precisa carregar o estilo de novo
     };
   }, []);
 
@@ -157,7 +158,7 @@ export function MapaCalor({ pontos, selecionadas, onCidade, uf }: {
 
   useEffect(() => {
     const m = mapa.current;
-    if (!m || !pronto) return;
+    if (!m || !pronto || !m.getLayer("calor")) return;
     m.setLayoutProperty("calor", "visibility", modo === "calor" ? "visible" : "none");
     // No modo calor os círculos ficam invisíveis, mas continuam respondendo a hover/clique
     m.setPaintProperty("pontos", "circle-opacity", modo === "calor" ? 0 : 0.8);

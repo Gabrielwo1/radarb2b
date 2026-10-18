@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useSessao } from "./sessao";
 
 export type Empresa = {
   cnpj: string;
@@ -60,6 +61,8 @@ export const urlApi = (rota: string, q?: URLSearchParams) =>
 
 /** Busca com cancelamento e mantendo o dado anterior enquanto carrega (sem "piscar"). */
 export function useApi<T>(url: string | null) {
+  // Login/logout muda o que a API devolve (ex.: prévia de 3 → lista completa): busca de novo
+  const { versao } = useSessao();
   const [dados, setDados] = useState<T | null>(null);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -86,7 +89,7 @@ export function useApi<T>(url: string | null) {
         if (ultimo.current === url) setCarregando(false);
       });
     return () => ctrl.abort();
-  }, [url]);
+  }, [url, versao]);
 
   return { dados, carregando, erro };
 }

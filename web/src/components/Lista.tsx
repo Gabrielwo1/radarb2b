@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowDownUp, Download, KanbanSquare, Plus, Star } from "lucide-react";
+import { ArrowDownUp, ArrowRight, Download, KanbanSquare, Lock, Plus, Star } from "lucide-react";
+import { abrirAcesso } from "@/lib/sessao";
 import Link from "next/link";
 import { useState } from "react";
 import type { Empresa } from "@/lib/api";
@@ -28,7 +29,7 @@ const PORTE_CURTO: Record<number, string> = { 1: "ME", 3: "EPP", 5: "Demais" };
 
 export function PainelProspects({
   aba, onAba, total, empresas, carregando, temMais, onMais, selecionado, onSelecionar,
-  ordem, onOrdem, urlExportar, ehSalvo, onSalvar, totalSalvos, etapasCrm, onCrm, onWhatsApp, children,
+  ordem, onOrdem, onExportar, ehSalvo, onSalvar, totalSalvos, etapasCrm, onCrm, onWhatsApp, bloqueado, children,
 }: {
   aba: Aba;
   onAba: (a: Aba) => void;
@@ -41,7 +42,9 @@ export function PainelProspects({
   onSelecionar: (cnpj: string | null) => void;
   ordem: string;
   onOrdem: (o: string) => void;
-  urlExportar: string;
+  onExportar: () => void;
+  /** Visitante sem login: mostra a prévia e o convite para criar conta */
+  bloqueado?: boolean;
   ehSalvo: (cnpj: string) => boolean;
   onSalvar: (e: Empresa) => void;
   etapasCrm: Map<string, EtapaId>;
@@ -120,7 +123,7 @@ export function PainelProspects({
             }
           </Popover>
           {aba !== "salvos" && (
-            <BotaoIcone escuro titulo="Exportar CSV (até 5.000)" href={urlExportar}>
+            <BotaoIcone escuro titulo="Exportar CSV (até 5.000)" onClick={onExportar}>
               <Download className="size-4" />
             </BotaoIcone>
           )}
@@ -173,6 +176,21 @@ export function PainelProspects({
             </tbody>
           </table>
 
+          {bloqueado && total != null && total > empresas.length && (
+            <div className="sticky left-0 mt-2 flex w-full flex-wrap items-center justify-between gap-4 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-coal-2 to-coal p-5">
+              <div className="flex items-center gap-4">
+                <span className="grid size-12 shrink-0 place-items-center rounded-full bg-lime text-ink"><Lock className="size-5" /></span>
+                <div>
+                  <p className="text-lg tracking-tight">Mais {escala(total - empresas.length)} empresas nesta busca</p>
+                  <p className="text-sm text-white/55">Crie sua conta grátis para ver todas, com telefone, e-mail e endereço completos.</p>
+                </div>
+              </div>
+              <button type="button" onClick={() => abrirAcesso("criar", "Crie sua conta grátis para ver todas as empresas")}
+                className="flex h-12 items-center gap-3 rounded-full bg-lime pl-5 pr-1.5 text-sm font-medium text-ink hover:bg-lime-deep">
+                Criar conta grátis <span className="grid size-9 place-items-center rounded-full bg-ink text-lime"><ArrowRight className="size-4" /></span>
+              </button>
+            </div>
+          )}
           {!carregando && !empresas.length && (
             <div className="hatch grid place-items-center rounded-3xl border border-white/10 px-6 py-16 text-center text-sm text-white/60">
               {aba === "salvos" ? "Você ainda não salvou nenhuma empresa. Use a estrela na tabela." : "Nenhuma empresa com esses filtros. Tente remover algum."}
@@ -190,6 +208,9 @@ export function PainelProspects({
     </section>
   );
 }
+
+/** "419••••21" (máscara do servidor) → "(41) 9••••-••21" */
+const foneMascarado = (t: string) => `(${t.slice(0, 2)}) ${t.slice(2, 3)}••••-••${t.slice(-2)}`;
 
 function Th({ children, className }: { children: React.ReactNode; className?: string }) {
   return <th className={cx("whitespace-nowrap px-3 py-2 font-normal", className)}>{children}</th>;
@@ -226,6 +247,8 @@ function Linha({ e, ativo, marcado, salvo, onClick, onMarcar, onSalvar, etapaCrm
   onSalvar: () => void;
 }) {
   const nome = nomeProprio(e.nome_fantasia || e.razao_social);
+  // Prévia de visitante: dados já vêm mascarados do servidor
+  const oculto = e.cnpj.startsWith("oculto-");
   const regime = e.mei ? "MEI" : e.simples ? "Simples" : "Normal";
   const fundo = ativo ? "bg-steel" : "bg-coal-2 group-hover:bg-coal-3";
   const sub = ativo ? "text-white/80" : "text-white/45";
@@ -247,7 +270,7 @@ function Linha({ e, ativo, marcado, salvo, onClick, onMarcar, onSalvar, etapaCrm
         </div>
       </td>
 
-      <td className={cx(td, "whitespace-nowrap tabular-nums", sub)}>{fmtCnpj(e.cnpj)}</td>
+      <td className={cx(td, "whitespace-nowrap tabular-nums", sub)}>{oculto ? "••.•••.•••/••••-••" : fmtCnpj(e.cnpj)}</td>
 
       <td className={cx(td, "max-w-[220px]")}>
         <p className="tabular-nums">#{e.cnae_principal}</p>
@@ -264,8 +287,8 @@ function Linha({ e, ativo, marcado, salvo, onClick, onMarcar, onSalvar, etapaCrm
       <td className={cx(td, "whitespace-nowrap tabular-nums")}>
         {e.telefone1 ? (
           <div className="flex items-center gap-1.5">
-            {telefone(e.telefone1)}
-            {ehCelular(e.telefone1) && (
+            {oculto ? foneMascarado(e.telefone1) : telefone(e.telefone1)}
+            {(oculto ? e.telefone1[2] === "9" : ehCelular(e.telefone1)) && (
               <button
                 type="button"
                 onClick={(ev) => { ev.stopPropagation(); onWhatsApp(); }}

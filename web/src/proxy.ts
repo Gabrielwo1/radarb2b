@@ -1,10 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-// Renova a sessão do Supabase a cada requisição e manda quem não está logado para /entrar.
-// É só a checagem otimista: as rotas de API validam o usuário de novo antes de responder.
-
-const PUBLICAS = ["/landing", "/entrar", "/auth"];
+// Renova a sessão do Supabase a cada requisição. As páginas são abertas; a proteção dos dados
+// fica nas rotas de API, que validam o usuário antes de responder.
 
 export async function proxy(request: NextRequest) {
   let resposta = NextResponse.next({ request });
@@ -26,18 +24,10 @@ export async function proxy(request: NextRequest) {
     },
   });
 
+  // O app é aberto para visitantes (o pop-up de acesso aparece na primeira ação);
+  // quem já está logado não precisa ver a página de login.
   const { data } = await supabase.auth.getClaims();
-  const logado = !!data?.claims;
-  const caminho = request.nextUrl.pathname;
-  const publica = PUBLICAS.some((p) => caminho === p || caminho.startsWith(`${p}/`)) || caminho.startsWith("/api/");
-
-  if (!logado && !publica) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/entrar";
-    url.search = caminho === "/" ? "" : `?volta=${encodeURIComponent(caminho + request.nextUrl.search)}`;
-    return NextResponse.redirect(url);
-  }
-  if (logado && caminho === "/entrar") {
+  if (data?.claims && request.nextUrl.pathname === "/entrar") {
     return NextResponse.redirect(new URL("/", request.url));
   }
   return resposta;
