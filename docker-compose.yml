@@ -1,0 +1,90 @@
+# Stack do B2B. Isolada da Licitah: rede, volumes e containers próprios.
+name: b2b
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: b2b
+      POSTGRES_USER: b2b
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina no .env}
+    command: >
+      postgres
+      -c shared_buffers=1GB
+      -c effective_cache_size=3GB
+      -c work_mem=32MB
+      -c maintenance_work_mem=512MB
+      -c max_wal_size=4GB
+      -c checkpoint_timeout=15min
+      -c random_page_cost=1.1
+      -c max_parallel_workers_per_gather=1
+      -c jit=off
+    shm_size: 1gb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U b2b -d b2b"]
+      interval: 10s
+      retries: 5
+    deploy:
+      resources:
+        limits: { cpus: "1.5", memory: 3g }
+
+  api:
+    build: ./api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://b2b:${POSTGRES_PASSWORD}@db:5432/b2b
+      API_KEY: ${API_KEY:?defina no .env}
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+    ports:
+      - "127.0.0.1:3000:3000"   # só localhost; exposição pública via Caddy
+    depends_on:
+      db: { condition: service_healthy }
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 512m }
+
+  # Execução sob demanda: docker compose run --rm etl
+  etl:
+    build: ./etl
+    profiles: ["etl"]
+    environment:
+      PGHOST: db
+      PGUSER: b2b
+      PGDATABASE: b2b
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGOPTIONS: "-c client_min_messages=warning"
+      API_URL: http://api:3000
+      API_KEY: ${API_KEY}
+      UFS: ${UFS:-PR}
+      SITUACOES: ${SITUACOES:-02}
+      MES: ${MES:-}
+    volumes:
+      - ./data:/data
+      - ./db:/sql:ro
+    depends_on:
+      db: { condition: service_healthy }
+    deploy:
+      resources:
+        limits: { cpus: "1", memory: 1g }
+
+  # HTTPS automático quando houver domínio: docker compose --profile https up -d
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["https"]
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:-}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on: [api]
+
+volumes:
+  pgdata:
+  caddy_data:

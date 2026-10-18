@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #141518;
+  --color-muted: #8b9099;
+  --color-line: #e3e8ef;
+  --color-lime: #e3fc3f;
+  --color-lime-deep: #c9e21f;
+  --color-coal: #2a2b2e;
+  --color-coal-2: #343539;
+  --color-coal-3: #404146;
+  --color-steel: #7a90a4;
+  --color-steel-2: #a3b5c6;
+  --color-mist: #edf2f9;
+
+  --radius-card: 28px;
+  --radius-panel: 34px;
+
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to { background-position: 200% 0; }
+  }
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  color: var(--color-ink);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #d8e5f8 0%, transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, #e4ecf8 0%, transparent 55%),
+    linear-gradient(180deg, #e9f0fa 0%, #f3f6fb 100%);
+  background-attachment: fixed;
+  min-height: 100dvh;
+}
+
+@layer components {
+  /* Cartão "vidro" claro */
+  .glass {
+    background: rgb(255 255 255 / 0.62);
+    border: 1px solid rgb(255 255 255 / 0.85);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 20px 40px -24px rgb(31 48 82 / 0.18);
+    backdrop-filter: blur(18px) saturate(1.2);
+  }
+
+  /* Listras diagonais da referência (placeholders, chips e barras) */
+  .hatch {
+    background-image: repeating-linear-gradient(-45deg, rgb(255 255 255 / 0.14) 0 2px, transparent 2px 7px);
+  }
+  .hatch-dark {
+    background-image: repeating-linear-gradient(-45deg, rgb(20 21 24 / 0.08) 0 2px, transparent 2px 7px);
+  }
+  .bar-lime {
+    background-color: var(--color-lime);
+    background-image: repeating-linear-gradient(-45deg, rgb(20 21 24 / 0.16) 0 3px, transparent 3px 8px);
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, rgb(0 0 0 / 0.05) 25%, rgb(0 0 0 / 0.1) 50%, rgb(0 0 0 / 0.05) 75%);
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+  .skeleton-dark {
+    background: linear-gradient(90deg, rgb(255 255 255 / 0.04) 25%, rgb(255 255 255 / 0.09) 50%, rgb(255 255 255 / 0.04) 75%);
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 0.15) transparent;
+  }
+}
+
+/* Popup do mapa no estilo do sistema */
+.maplibregl-popup-content {
+  border-radius: 16px !important;
+  padding: 10px 14px !important;
+  font-family: var(--font-outfit), sans-serif;
+  box-shadow: 0 12px 30px -12px rgb(20 21 24 / 0.35) !important;
+}
+.maplibregl-popup-tip { display: none; }
+.maplibregl-ctrl-attrib { font-size: 10px; border-radius: 10px 0 0 0; }
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes flutuar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Card do kanban da landing atravessando as etapas */
+@keyframes kanban {
+  0%, 14% { transform: translateX(0); opacity: 1; }
+  24%, 38% { transform: translateX(calc(100% + 24px)); }
+  48%, 62% { transform: translateX(calc(200% + 48px)); }
+  72%, 92% { transform: translateX(calc(300% + 72px)); opacity: 1; }
+  97% { transform: translateX(calc(300% + 72px)); opacity: 0; }
+  100% { transform: translateX(0); opacity: 0; }
+}

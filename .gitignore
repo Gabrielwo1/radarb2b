@@ -1,0 +1,12 @@
+node_modules/
+dist/
+data/
+.next/
+.env
+.env.dev
+.env*.local
+.DS_Store
+*.tsbuildinfo
+supabase/.temp/
+supabase/.branches/
+.claude/
