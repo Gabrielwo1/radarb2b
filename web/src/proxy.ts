@@ -9,6 +9,12 @@ const PUBLICAS = ["/landing", "/entrar", "/auth"];
 export async function proxy(request: NextRequest) {
   let resposta = NextResponse.next({ request });
 
+  // Sem configuração do Supabase não há como checar sessão: não derruba o site (landing continua no ar)
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+    console.error("Supabase não configurado: defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
+    return resposta;
+  }
+
   const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
     cookies: {
       getAll: () => request.cookies.getAll(),

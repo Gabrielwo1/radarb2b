@@ -10,3 +10,6 @@ data/
 supabase/.temp/
 supabase/.branches/
 .claude/
+.vercel/
+.vercel
+.env*
