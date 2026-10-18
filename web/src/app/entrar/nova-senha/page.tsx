@@ -18,7 +18,7 @@ export default function NovaSenha() {
     const { error } = await supabaseNavegador().auth.updateUser({ password: senha });
     setEnviando(false);
     if (error) setErro(error.message === "Auth session missing!" ? "Link expirado. Peça um novo na tela de login." : error.message);
-    else router.replace("/");
+    else router.replace("/app");
   };
 
   return (

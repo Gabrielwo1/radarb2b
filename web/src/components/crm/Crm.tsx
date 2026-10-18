@@ -106,7 +106,7 @@ export function Crm() {
             <AlarmClock className="size-4" /> Follow-ups de hoje
             {k.atrasados + k.hoje > 0 && <span className={cx("rounded-full px-1.5 text-[11px]", soFollowUp ? "bg-lime text-ink" : "bg-ink text-white")}>{k.atrasados + k.hoje}</span>}
           </button>
-          <Link href="/" className="flex h-11 items-center gap-2 rounded-full bg-ink px-5 text-sm text-white hover:bg-coal-2">
+          <Link href="/app" className="flex h-11 items-center gap-2 rounded-full bg-ink px-5 text-sm text-white hover:bg-coal-2">
             <Plus className="size-4 text-lime" /> Buscar empresas
           </Link>
         </div>
@@ -285,7 +285,7 @@ function Vazio() {
         Na prospecção, clique em <strong>+ CRM</strong> numa empresa, selecione várias e use <strong>Adicionar ao CRM</strong>, ou chame pelo
         WhatsApp: a empresa entra aqui automaticamente.
       </p>
-      <Link href="/" className="flex h-11 items-center gap-2 rounded-full bg-lime px-5 text-sm font-medium text-ink hover:bg-lime-deep">
+      <Link href="/app" className="flex h-11 items-center gap-2 rounded-full bg-lime px-5 text-sm font-medium text-ink hover:bg-lime-deep">
         <Search className="size-4" /> Buscar empresas
       </Link>
     </section>

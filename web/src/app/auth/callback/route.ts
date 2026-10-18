@@ -4,8 +4,8 @@ import { supabaseServidor } from "@/lib/supabase/server";
 // Destino dos links de e-mail (confirmação de cadastro e recuperação de senha): troca o código pela sessão.
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
-  const next = request.nextUrl.searchParams.get("next") ?? "/";
-  const destino = next.startsWith("/") && !next.startsWith("//") ? next : "/";
+  const next = request.nextUrl.searchParams.get("next") ?? "/app";
+  const destino = next.startsWith("/") && !next.startsWith("//") ? next : "/app";
 
   if (code) {
     const supabase = await supabaseServidor();

@@ -28,7 +28,7 @@ export async function proxy(request: NextRequest) {
   // quem já está logado não precisa ver a página de login.
   const { data } = await supabase.auth.getClaims();
   if (data?.claims && request.nextUrl.pathname === "/entrar") {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL("/app", request.url));
   }
   return resposta;
 }

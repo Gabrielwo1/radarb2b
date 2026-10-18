@@ -8,7 +8,7 @@ import { useCrm } from "@/lib/crm";
 import { Popover, cx } from "./ui";
 
 const PAGINAS = [
-  { id: "prospeccao", rotulo: "Prospecção", href: "/", icone: Search },
+  { id: "prospeccao", rotulo: "Prospecção", href: "/app", icone: Search },
   { id: "crm", rotulo: "CRM", href: "/crm", icone: KanbanSquare },
   { id: "automacao", rotulo: "Automação IA", href: "/automacao", icone: Sparkles },
 ] as const;
@@ -19,7 +19,7 @@ export function TopNav({ pagina }: { pagina: (typeof PAGINAS)[number]["id"] }) {
 
   return (
     <header className="flex flex-wrap items-center gap-3">
-      <Link href="/" className="mr-4 flex items-center gap-2.5">
+      <Link href="/" className="mr-4 flex items-center gap-2.5" title="Página inicial">
         <span className="grid size-10 place-items-center rounded-full bg-ink text-lime">
           <Radar className="size-5" />
         </span>

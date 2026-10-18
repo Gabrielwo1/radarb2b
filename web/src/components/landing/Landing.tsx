@@ -58,7 +58,7 @@ export function Landing() {
         </Revelar>
 
         <Revelar atraso={150} className="relative h-[460px] sm:h-[560px]">
-          <MapaCalor pontos={mapa} uf="Brasil" selecionadas={[]} onCidade={(c) => { window.location.href = `/?uf=BR&municipio=${c}`; }} />
+          <MapaCalor pontos={mapa} uf="Brasil" selecionadas={[]} onCidade={(c) => { window.location.href = `/app?uf=BR&municipio=${c}`; }} />
           <Flutuante className="-left-3 bottom-24 sm:-left-8">
             <Database className="size-4 text-lime" />
             <span><strong className="text-lg">{br ? <Contador valor={br.total} formato={escala} /> : "—"}</strong> empresas ativas</span>
@@ -111,7 +111,7 @@ function Nav() {
   return (
     <div className="sticky top-3 z-40 px-4 sm:px-6 lg:px-8">
       <nav className={cx("mx-auto flex max-w-[1440px] items-center gap-3 rounded-full p-1.5 pl-4 transition-all", rolou ? "glass" : "bg-transparent")}>
-        <Link href="/landing" className="flex items-center gap-2.5">
+        <Link href="/" className="flex items-center gap-2.5">
           <span className="grid size-9 place-items-center rounded-full bg-ink text-lime"><Radar className="size-[18px]" /></span>
           <span className="text-lg font-semibold tracking-tight">radar<span className="text-muted">b2b</span></span>
         </Link>
@@ -120,7 +120,7 @@ function Nav() {
             <a key={h} href={h} className="rounded-full px-4 py-2 text-sm text-white/75 transition hover:bg-white/10 hover:text-white">{r}</a>
           ))}
         </div>
-        <Link href="/" className="ml-auto flex h-11 items-center gap-2 rounded-full bg-lime pl-5 pr-1.5 text-sm font-medium text-ink transition hover:bg-lime-deep md:ml-0">
+        <Link href="/app" className="ml-auto flex h-11 items-center gap-2 rounded-full bg-lime pl-5 pr-1.5 text-sm font-medium text-ink transition hover:bg-lime-deep md:ml-0">
           Abrir o app <span className="grid size-8 place-items-center rounded-full bg-ink text-lime"><ArrowRight className="size-4" /></span>
         </Link>
       </nav>
@@ -155,7 +155,7 @@ function BuscaAoVivo() {
       if (api.get("uf") === "BR") api.delete("uf");
       api.set("limit", "3");
       const busca: Busca = await fetch(urlApi("empresas", api)).then((x) => x.json());
-      setR({ i, busca, link: `/?${q}` });
+      setR({ i, busca, link: `/app?${q}` });
       setEstado("pronto");
     } catch {
       setEstado("erro");
@@ -286,7 +286,7 @@ function Estados() {
                   </div>
                 </div>
               </div>
-              <Link href={`/?uf=${uf}`} className="mt-7 inline-flex items-center gap-2 text-sm text-lime hover:underline">
+              <Link href={`/app?uf=${uf}`} className="mt-7 inline-flex items-center gap-2 text-sm text-lime hover:underline">
                 Explorar {NOMES_UF[uf]} no app <ArrowRight className="size-4" />
               </Link>
             </div>
@@ -550,7 +550,7 @@ function CtaFinal() {
         <div className="hatch-dark pointer-events-none absolute inset-0 opacity-60" />
         <div className="relative flex flex-col items-start gap-6 md:flex-row md:items-end md:justify-between">
           <h2 className="max-w-2xl text-4xl leading-[1.05] tracking-tight sm:text-6xl">Seu próximo cliente já tem CNPJ. Vamos encontrá-lo?</h2>
-          <Link href="/" className="flex h-14 shrink-0 items-center gap-3 rounded-full bg-ink pl-6 pr-2 text-base font-medium text-white hover:bg-coal-2">
+          <Link href="/app" className="flex h-14 shrink-0 items-center gap-3 rounded-full bg-ink pl-6 pr-2 text-base font-medium text-white hover:bg-coal-2">
             Começar a prospectar <span className="grid size-10 place-items-center rounded-full bg-lime text-ink"><ArrowRight className="size-5" /></span>
           </Link>
         </div>

@@ -183,7 +183,7 @@ export function LeadPainel({ lead, onFechar }: { lead: Lead; onFechar: () => voi
             </a>
           )}
           <div className="flex gap-2">
-            <Link href={`/?q=${lead.cnpj}`} className="flex h-10 flex-1 items-center justify-center gap-2 rounded-full border border-white/40 text-xs hover:bg-white/10">
+            <Link href={`/app?q=${lead.cnpj}`} className="flex h-10 flex-1 items-center justify-center gap-2 rounded-full border border-white/40 text-xs hover:bg-white/10">
               <Search className="size-3.5" /> Ver na prospecção
             </Link>
             <button

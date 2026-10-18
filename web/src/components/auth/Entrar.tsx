@@ -20,14 +20,14 @@ const traduzir = (m: string) => MENSAGENS[m] ?? m;
 export function Entrar() {
   const router = useRouter();
   const sp = useSearchParams();
-  const volta = sp.get("volta") || "/";
+  const volta = sp.get("volta") || "/app";
   return (
     <main className="grid min-h-dvh lg:grid-cols-[1.05fr_1fr]">
       {/* Lado da marca */}
       <section className="relative hidden overflow-hidden bg-coal p-10 text-white lg:flex lg:flex-col">
         <div className="pointer-events-none absolute -right-40 -top-40 size-[560px] rounded-full bg-lime/20 blur-[130px]" />
         <div className="pointer-events-none absolute -bottom-40 left-10 size-[420px] rounded-full bg-steel/30 blur-[120px]" />
-        <Link href="/landing" className="relative flex items-center gap-2.5">
+        <Link href="/" className="relative flex items-center gap-2.5">
           <span className="grid size-10 place-items-center rounded-full bg-lime text-ink"><Radar className="size-5" /></span>
           <span className="text-lg font-semibold tracking-tight">radar<span className="text-white/50">b2b</span></span>
         </Link>
@@ -45,7 +45,7 @@ export function Entrar() {
 
       {/* Formulário */}
       <section className="flex flex-col items-center justify-center px-4 py-10 sm:px-8">
-        <Link href="/landing" className="mb-8 flex items-center gap-2.5 lg:hidden">
+        <Link href="/" className="mb-8 flex items-center gap-2.5 lg:hidden">
           <span className="grid size-10 place-items-center rounded-full bg-ink text-lime"><Radar className="size-5" /></span>
           <span className="text-lg font-semibold tracking-tight">radar<span className="text-muted">b2b</span></span>
         </Link>
@@ -68,7 +68,7 @@ export function Entrar() {
 }
 
 /** Formulário de entrar / criar conta / recuperar senha, usado na página /entrar e no pop-up do app. */
-export function FormularioAcesso({ modoInicial = "entrar", erroInicial = null, destinoConfirmacao = "/", onEntrou }: {
+export function FormularioAcesso({ modoInicial = "entrar", erroInicial = null, destinoConfirmacao = "/app", onEntrou }: {
   modoInicial?: Modo;
   erroInicial?: string | null;
   /** Para onde o link de confirmação do e-mail leva de volta */
