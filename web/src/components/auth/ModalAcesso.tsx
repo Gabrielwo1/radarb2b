@@ -26,7 +26,7 @@ export function ModalAcesso() {
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center p-3 sm:items-center" role="dialog" aria-modal="true" aria-label="Entrar ou criar conta">
       <button type="button" aria-label="Fechar" onClick={fecharAcesso} className="absolute inset-0 bg-ink/40 backdrop-blur-[3px] [animation:aparecer_.2s_ease-out]" />
-      <div className="relative grid w-full max-w-3xl overflow-hidden rounded-[var(--radius-panel)] bg-[#f3f6fb] shadow-2xl [animation:aparecer_.3s_ease-out] md:grid-cols-[0.9fr_1.1fr]">
+      <div className="relative grid max-h-[94dvh] w-full max-w-3xl overflow-hidden rounded-[var(--radius-panel)] bg-[#f3f6fb] shadow-2xl [animation:aparecer_.3s_ease-out] md:grid-cols-[0.9fr_1.1fr]">
         <aside className="relative hidden overflow-hidden bg-coal p-7 text-white md:flex md:flex-col">
           <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-lime/25 blur-[90px]" />
           <span className="relative grid size-10 place-items-center rounded-full bg-lime text-ink"><Radar className="size-5" /></span>
@@ -38,7 +38,7 @@ export function ModalAcesso() {
           </ul>
         </aside>
 
-        <section className="p-6 sm:p-8">
+        <section className="overflow-y-auto p-6 sm:p-8">
           <button type="button" onClick={fecharAcesso} aria-label="Fechar"
             className="absolute right-4 top-4 grid size-9 place-items-center rounded-full bg-white/80 text-ink/60 hover:text-ink">
             <X className="size-4" />
