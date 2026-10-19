@@ -16,6 +16,11 @@ type Estado = {
   modal: { aberto: boolean; motivo: string | null; modo: "entrar" | "criar" };
 };
 
+// Modo de desenvolvimento sem login: só no servidor local (ignorado em produção).
+// O CRM, favoritos e buscas salvas continuam exigindo uma conta real (dados ficam no Supabase).
+export const DEV_SEM_LOGIN = process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_DEV_SEM_LOGIN === "1";
+const USUARIO_DEV: Usuario = { id: "dev", email: "modo-dev@localhost", nome: "Modo dev" };
+
 const INICIAL: Estado = { usuario: null, carregado: false, versao: 0, modal: { aberto: false, motivo: null, modo: "criar" } };
 let estado: Estado = INICIAL;
 let pendente: (() => void) | null = null;
@@ -32,6 +37,10 @@ const paraUsuario = (u: { id: string; email?: string; user_metadata?: Record<str
 function iniciar() {
   if (iniciado || typeof window === "undefined") return;
   iniciado = true;
+  if (DEV_SEM_LOGIN) {
+    mudar({ usuario: USUARIO_DEV, carregado: true });
+    return;
+  }
   const supabase = supabaseNavegador();
   supabase.auth.getSession().then(({ data }) => mudar({ usuario: paraUsuario(data.session?.user), carregado: true }));
   supabase.auth.onAuthStateChange((evento, sessao) => {
@@ -65,7 +74,7 @@ export function useSessao() {
 /** Executa a ação se houver sessão; senão abre o pop-up e guarda a ação para depois do login. */
 export function exigirLogin(acao: () => void, motivo?: string) {
   iniciar();
-  if (estado.usuario) return acao();
+  if (DEV_SEM_LOGIN || estado.usuario) return acao();
   pendente = acao;
   mudar({ modal: { aberto: true, motivo: motivo ?? null, modo: "criar" } });
 }

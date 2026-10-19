@@ -27,10 +27,13 @@ function anonimizar(corpo: { resultados?: Linha[] }) {
   return corpo;
 }
 
+// Modo de desenvolvimento sem login: só no servidor local (ignorado em produção)
+const DEV_SEM_LOGIN = process.env.NODE_ENV !== "production" && process.env.DEV_SEM_LOGIN === "1";
+
 export async function GET(req: NextRequest, ctx: RouteContext<"/api/b2b/[...path]">) {
   const { path } = await ctx.params;
   if (!ROTAS.has(path[0])) return Response.json({ erro: "Rota não permitida" }, { status: 404 });
-  const logado = !!(await usuarioAtual());
+  const logado = DEV_SEM_LOGIN || !!(await usuarioAtual());
   if (!logado && !permitidoSemLogin(path, req)) {
     return Response.json({ erro: "Faça login para continuar" }, { status: 401 });
   }
