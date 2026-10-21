@@ -21,7 +21,7 @@ type Troca = { id: number; pergunta: string; resultado?: Interpretacao; erro?: s
 export function Assistente({ uf, total, onAplicar, abaixo }: {
   uf: string;
   total: number | null;
-  onAplicar: (filtros: Record<string, string>) => void;
+  onAplicar: (filtros: Record<string, string>, pergunta: string) => void;
   /** Conteúdo encaixado logo abaixo da caixa (ex.: tab de filtros detalhados) */
   abaixo?: React.ReactNode;
 }) {
@@ -49,7 +49,7 @@ export function Assistente({ uf, total, onAplicar, abaixo }: {
       const dados = await r.json();
       if (!r.ok) throw new Error(dados.erro ?? "Não foi possível interpretar");
       setTrocas((t) => t.map((x) => (x.id === id ? { ...x, resultado: dados } : x)));
-      onAplicar(dados.filtros);
+      onAplicar(dados.filtros, pergunta);
     } catch (e) {
       setTrocas((t) => t.map((x) => (x.id === id ? { ...x, erro: (e as Error).message } : x)));
     } finally {

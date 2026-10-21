@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, BookmarkPlus, Database, Download, Trash2 } from "lucide-react";
+import { Bookmark, BookmarkPlus, Database, Download, History, RotateCcw, Trash2, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -8,8 +8,9 @@ import { type Busca, type Empresa, type PontoMapa, type Resumo as TResumo, type 
 import { type Aba, UF_PADRAO, contarFiltros, lista, queryApi } from "@/lib/filtros";
 import { useBuscasSalvas, useLocal, useSalvos } from "@/lib/local";
 import { exigirLogin, useSessao } from "@/lib/sessao";
+import { limparBusca, registrarBusca, registrarFiltros, ultimaBusca, useUltimaBusca } from "@/lib/ultimaBusca";
 import { adicionarAoCrm, useEtapasCrm } from "@/lib/crm";
-import { ehCelular, linkWhatsApp } from "@/lib/formato";
+import { ehCelular, escala, linkWhatsApp } from "@/lib/formato";
 import { Assistente } from "./Assistente";
 import { Detalhe } from "./Detalhe";
 import { Filtros, TabFiltros } from "./Filtros";
@@ -37,6 +38,23 @@ export function Prospeccao() {
   const { usuario, carregado } = useSessao();
   const logado = !!usuario;
 
+  // Toda mudança de busca passa por aqui: grava a última pesquisa antes de trocar a URL
+  const navegar = useCallback(
+    (q: URLSearchParams, texto?: string | null) => {
+      if (texto === undefined) registrarFiltros(q.toString());
+      else registrarBusca(q.toString(), texto);
+      router.replace(q.size ? `${pathname}?${q}` : pathname, { scroll: false });
+    },
+    [router, pathname],
+  );
+
+  // Voltando de outra página (menu leva a /app sem filtros): reaplica a última pesquisa
+  const ultima = useUltimaBusca();
+  useEffect(() => {
+    const salva = ultimaBusca();
+    if (!sp.size && salva?.atual) router.replace(`${pathname}?${salva.atual}`, { scroll: false });
+  }, [sp, router, pathname]);
+
   // Visitante navega livre; qualquer mudança de filtro/aba/ordem pede login antes (e é aplicada depois)
   const definir = useCallback(
     (mudancas: Record<string, string | null>) =>
@@ -46,16 +64,23 @@ export function Prospeccao() {
           if (v === null || v === "") q.delete(k);
           else q.set(k, v);
         }
-        router.replace(q.size ? `${pathname}?${q}` : pathname, { scroll: false });
+        navegar(q);
       }, "Crie sua conta grátis para filtrar as empresas"),
-    [sp, router, pathname],
+    [sp, navegar],
   );
 
   // Busca conversacional: substitui os filtros atuais pelos interpretados (mantém aba e ordenação)
-  const aplicarInterpretacao = (filtros: Record<string, string>) => {
+  const aplicarInterpretacao = (filtros: Record<string, string>, texto: string) => {
     const q = new URLSearchParams(filtros);
     for (const k of ["aba", "ordem"]) if (sp.get(k)) q.set(k, sp.get(k)!);
-    router.replace(q.size ? `${pathname}?${q}` : pathname, { scroll: false });
+    navegar(q, texto);
+  };
+
+  const [limpezas, setLimpezas] = useState(0);
+  const limparPesquisa = () => {
+    limparBusca();
+    setLimpezas((n) => n + 1); // zera a conversa do chat
+    router.replace(pathname, { scroll: false });
   };
 
   const alternarLista = (chave: string, valor: string) => {
@@ -137,7 +162,7 @@ export function Prospeccao() {
             : "Base Receita Federal"}
         </div>
         <div className="flex items-center gap-2">
-          <BuscasSalvas query={sp.toString()} onAplicar={(q) => router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false })} />
+          <BuscasSalvas query={sp.toString()} onAplicar={(q) => navegar(new URLSearchParams(q), null)} />
           <button type="button" onClick={exportar} className="flex h-11 items-center gap-2 rounded-full bg-ink px-5 text-sm text-white hover:bg-coal-2">
             <Download className="size-4" /> Exportar CSV
           </button>
@@ -145,10 +170,24 @@ export function Prospeccao() {
       </div>
 
       <Assistente
+        key={limpezas}
         uf={uf}
         total={resumo.carregando ? null : resumo.dados?.total ?? null}
         onAplicar={aplicarInterpretacao}
-        abaixo={<TabFiltros aberto={filtrosAbertos} ativos={contarFiltros(sp)} onClick={() => setFiltrosAbertos((v) => !v)} />}
+        abaixo={
+          <>
+            {ultima && (
+              <PesquisaAtiva
+                texto={ultima.texto}
+                ativa={semVisao(ultima.query) === semVisao(sp.toString())}
+                total={resumo.carregando ? null : resumo.dados?.total ?? null}
+                onRefazer={() => navegar(new URLSearchParams(ultima.query), ultima.texto)}
+                onLimpar={limparPesquisa}
+              />
+            )}
+            <TabFiltros aberto={filtrosAbertos} ativos={contarFiltros(sp)} onClick={() => setFiltrosAbertos((v) => !v)} />
+          </>
+        }
       />
 
       <Filtros sp={sp} definir={definir} ufsCarregadas={ufsCarregadas} aberto={filtrosAbertos} onFechar={() => setFiltrosAbertos(() => false)} />
@@ -202,6 +241,45 @@ export function Prospeccao() {
         )}
       </PainelProspects>
     </main>
+  );
+}
+
+/** Filtros da busca sem aba/ordenação (que não mudam a pesquisa em si). */
+function semVisao(query: string) {
+  const q = new URLSearchParams(query);
+  q.delete("aba");
+  q.delete("ordem");
+  q.sort();
+  return q.toString();
+}
+
+/** Aba com a última pesquisa: refaz a mesma busca depois de mexer nos filtros, ou limpa tudo. */
+function PesquisaAtiva({ texto, ativa, total, onRefazer, onLimpar }: {
+  texto: string | null;
+  ativa: boolean;
+  total: number | null;
+  onRefazer: () => void;
+  onLimpar: () => void;
+}) {
+  return (
+    <div className="glass aparecer flex w-full max-w-2xl items-center gap-3 rounded-full p-1.5 pl-4 text-left text-sm">
+      <History className="size-4 shrink-0 text-ink/50" />
+      <div className="min-w-0 flex-1 leading-tight">
+        <p className="text-[11px] uppercase tracking-wide text-muted">{ativa ? "Pesquisa ativa" : "Filtros alterados"}</p>
+        <p className="truncate" title={texto ?? undefined}>
+          {texto ? `“${texto}”` : "Filtros selecionados"}
+          {ativa && total != null && <span className="text-ink/50"> · {escala(total)} empresas</span>}
+        </p>
+      </div>
+      {!ativa && (
+        <button type="button" onClick={onRefazer} className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-lime px-3.5 font-medium hover:bg-lime-deep">
+          <RotateCcw className="size-4" /> <span className="sm:hidden">Refazer</span><span className="hidden sm:inline">Filtrar novamente</span>
+        </button>
+      )}
+      <button type="button" onClick={onLimpar} aria-label="Limpar pesquisa" title="Limpar pesquisa" className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-ink px-3.5 text-white hover:bg-coal-2">
+        <X className="size-4" /> <span className="hidden sm:inline">Limpar</span>
+      </button>
+    </div>
   );
 }
 
