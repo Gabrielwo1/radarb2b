@@ -17,6 +17,23 @@ if (typeof window !== "undefined") {
 }
 type Modo = "calor" | "pontos";
 
+const CORES_CALOR: maplibregl.ExpressionSpecification = [
+  "interpolate", ["linear"], ["heatmap-density"],
+  0, "rgba(143,164,183,0)",
+  0.15, "rgba(143,164,183,0.45)",
+  0.4, "rgba(163,181,198,0.85)",
+  0.65, "#d9f23a",
+  0.85, "#e3fc3f",
+  1, "#2a2b2e",
+];
+const CORES_FOCO: maplibregl.ExpressionSpecification = [
+  "interpolate", ["linear"], ["heatmap-density"],
+  0, "rgba(143,164,183,0)",
+  0.2, "rgba(163,181,198,0.6)",
+  0.55, "rgba(217,242,58,0.85)",
+  1, "#e3fc3f",
+];
+
 export function MapaCalor({ pontos, selecionadas, onCidade, uf }: {
   pontos: PontoMapa[] | null;
   selecionadas: string[];
@@ -55,15 +72,7 @@ export function MapaCalor({ pontos, selecionadas, onCidade, uf }: {
           "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 4, 0.8, 9, 2.2],
           "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 4, 14, 7, 34, 10, 60],
           "heatmap-opacity": 0.9,
-          "heatmap-color": [
-            "interpolate", ["linear"], ["heatmap-density"],
-            0, "rgba(143,164,183,0)",
-            0.15, "rgba(143,164,183,0.45)",
-            0.4, "rgba(163,181,198,0.85)",
-            0.65, "#d9f23a",
-            0.85, "#e3fc3f",
-            1, "#2a2b2e",
-          ],
+          "heatmap-color": CORES_CALOR,
         },
       });
 
@@ -125,11 +134,18 @@ export function MapaCalor({ pontos, selecionadas, onCidade, uf }: {
     };
   }, []);
 
+  // Com cidades filtradas o mapa foca nelas: o calor e o enquadramento usam só as selecionadas
+  // (as demais continuam clicáveis, invisíveis, para somar cidades ao filtro).
+  const foco = pontos?.filter((p) => selecionadas.includes(String(p.codigo))) ?? [];
+  const emFoco = foco.length > 0;
+  const visiveis = emFoco ? foco : pontos;
+  const chaveFoco = foco.map((p) => p.codigo).join(",");
+
   // Atualiza os dados. Peso em escala log: capital não "apaga" o interior.
   useEffect(() => {
     const m = mapa.current;
-    if (!m || !pronto || !pontos) return;
-    const maxLog = Math.log1p(Math.max(1, ...pontos.map((p) => p.total)));
+    if (!m || !pronto || !pontos || !visiveis) return;
+    const maxLog = Math.log1p(Math.max(1, ...visiveis.map((p) => p.total)));
     const fonte = m.getSource("cidades") as GeoJSONSource | undefined;
     if (!fonte) return;
     fonte.setData({
@@ -143,29 +159,42 @@ export function MapaCalor({ pontos, selecionadas, onCidade, uf }: {
           total: p.total,
           rotulo: escala(p.total),
           // log ao quadrado: interior aparece, mas os polos se destacam
-          peso: (Math.log1p(p.total) / maxLog) ** 2,
+          // em foco são poucas cidades: todas precisam acender, a maior só um pouco mais
+          peso: emFoco ? 0.6 + 0.4 * (Math.log1p(p.total) / maxLog) : (Math.log1p(p.total) / maxLog) ** 2,
           sel: selecionadas.includes(String(p.codigo)),
         },
       })),
     });
-  }, [pontos, pronto, selecionadas]);
+    const soSelecionadas = emFoco ? ["==", ["get", "sel"], true] : null;
+    m.setFilter("calor", soSelecionadas as maplibregl.FilterSpecification | null);
+    m.setFilter("rotulos", (emFoco ? soSelecionadas : [">", ["get", "peso"], 0.35]) as maplibregl.FilterSpecification);
+    m.setLayerZoomRange("rotulos", emFoco ? 0 : 7, 24);
+    // Em foco o miolo fica lime (sem o tom escuro de "polo"), para o nome da cidade continuar legível
+    m.setPaintProperty("calor", "heatmap-color", emFoco ? CORES_FOCO : CORES_CALOR);
+    m.setPaintProperty("calor", "heatmap-intensity", emFoco ? 3 : ["interpolate", ["linear"], ["zoom"], 4, 0.8, 9, 2.2]);
+    m.setPaintProperty("calor", "heatmap-radius", emFoco
+      ? ["interpolate", ["linear"], ["zoom"], 4, 30, 7, 55, 10, 90]
+      : ["interpolate", ["linear"], ["zoom"], 4, 14, 7, 34, 10, 60]);
+  }, [pontos, pronto, selecionadas, emFoco, visiveis]);
 
-  // Enquadra o mapa ao trocar de UF
+  // Enquadra o mapa ao trocar de UF ou de cidades filtradas
   useEffect(() => {
-    if (!mapa.current || !pronto || !pontos?.length) return;
-    enquadrar(mapa.current, pontos);
-  }, [uf, pronto, pontos?.length]);
+    if (!mapa.current || !pronto || !visiveis?.length) return;
+    enquadrar(mapa.current, visiveis);
+  }, [uf, pronto, pontos?.length, chaveFoco]);
 
   useEffect(() => {
     const m = mapa.current;
     if (!m || !pronto || !m.getLayer("calor")) return;
     m.setLayoutProperty("calor", "visibility", modo === "calor" ? "visible" : "none");
     // No modo calor os círculos ficam invisíveis, mas continuam respondendo a hover/clique
-    m.setPaintProperty("pontos", "circle-opacity", modo === "calor" ? 0 : 0.8);
-    m.setPaintProperty("pontos", "circle-stroke-opacity", modo === "calor" ? 0 : 1);
-  }, [modo, pronto]);
+    // Em foco, só as cidades filtradas aparecem como ponto (as outras seguem clicáveis)
+    const visivel: maplibregl.ExpressionSpecification | number = emFoco ? ["case", ["boolean", ["get", "sel"], false], 1, 0] : 1;
+    m.setPaintProperty("pontos", "circle-opacity", modo === "calor" ? 0 : ["*", 0.8, visivel]);
+    m.setPaintProperty("pontos", "circle-stroke-opacity", modo === "calor" ? 0 : visivel);
+  }, [modo, pronto, emFoco]);
 
-  const topCidade = pontos?.reduce<PontoMapa | null>((a, b) => (!a || b.total > a.total ? b : a), null);
+  const topCidade = visiveis?.reduce<PontoMapa | null>((a, b) => (!a || b.total > a.total ? b : a), null);
 
   return (
     <section className="glass relative h-full min-h-[440px] overflow-hidden rounded-[var(--radius-card)] p-2">
@@ -177,9 +206,12 @@ export function MapaCalor({ pontos, selecionadas, onCidade, uf }: {
         <div className="glass pointer-events-auto rounded-3xl px-4 py-3">
           <p className="text-xs text-muted">Mapa de calor · {uf}</p>
           <p className="text-lg leading-tight">
-            {pontos ? `${numero(pontos.length)} cidades` : "Carregando…"}
+            {!visiveis ? "Carregando…" : emFoco
+              ? (foco.length === 1 ? foco[0].nome : `${foco.length} cidades filtradas`)
+              : `${numero(visiveis.length)} cidades`}
           </p>
-          {topCidade && <p className="text-xs text-ink/60">maior polo: {topCidade.nome}</p>}
+          {emFoco && foco.length === 1 && <p className="text-xs text-ink/60">{numero(foco[0].total)} empresas</p>}
+          {topCidade && !(emFoco && foco.length === 1) && <p className="text-xs text-ink/60">maior polo: {topCidade.nome}</p>}
         </div>
 
         <div className="pointer-events-auto flex items-center gap-1 rounded-full bg-ink p-1">
@@ -209,7 +241,7 @@ export function MapaCalor({ pontos, selecionadas, onCidade, uf }: {
         {[
           { i: <Plus className="size-4" />, t: "Aproximar", f: () => mapa.current?.zoomIn() },
           { i: <Minus className="size-4" />, t: "Afastar", f: () => mapa.current?.zoomOut() },
-          { i: <Crosshair className="size-4" />, t: "Enquadrar", f: () => mapa.current && pontos && enquadrar(mapa.current, pontos) },
+          { i: <Crosshair className="size-4" />, t: "Enquadrar", f: () => mapa.current && visiveis && enquadrar(mapa.current, visiveis) },
         ].map((b) => (
           <button key={b.t} type="button" title={b.t} aria-label={b.t} onClick={b.f}
             className="glass grid size-10 place-items-center rounded-full hover:bg-white">
@@ -225,5 +257,5 @@ function enquadrar(m: MlMap, pontos: PontoMapa[]) {
   if (!pontos.length) return;
   const b = new maplibregl.LngLatBounds();
   pontos.forEach((p) => b.extend([p.lng, p.lat]));
-  m.fitBounds(b, { padding: { top: 110, bottom: 60, left: 50, right: 70 }, maxZoom: 10, duration: 800 });
+  m.fitBounds(b, { padding: { top: 110, bottom: 60, left: 50, right: 70 }, maxZoom: pontos.length === 1 ? 9 : 10, duration: 800 });
 }
