@@ -1,0 +1,1666 @@
+{
+ "mes": "2026-09",
+ "municipios": 5572,
+ "resumos": {
+  "BR": {
+   "total": 28263114,
+   "com_telefone": 26920053,
+   "novas_12m": 4567264,
+   "mei": 13738467,
+   "top_municipios": [
+    {
+     "codigo": 7107,
+     "nome": "SAO PAULO",
+     "total": 2726727
+    },
+    {
+     "codigo": 6001,
+     "nome": "RIO DE JANEIRO",
+     "total": 1059224
+    },
+    {
+     "codigo": 4123,
+     "nome": "BELO HORIZONTE",
+     "total": 548322
+    },
+    {
+     "codigo": 7535,
+     "nome": "CURITIBA",
+     "total": 480639
+    },
+    {
+     "codigo": 9701,
+     "nome": "BRASILIA",
+     "total": 476086
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 1015662
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 941729
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 836089
+    },
+    {
+     "codigo": 8219999,
+     "descricao": "Preparação de documentos e serviços especializados de apoio administrativo não especificados anteriormente",
+     "total": 683688
+    },
+    {
+     "codigo": 4399103,
+     "descricao": "Obras de alvenaria",
+     "total": 617700
+    }
+   ]
+  },
+  "AC": {
+   "total": 54152,
+   "com_telefone": 51682,
+   "novas_12m": 9220,
+   "mei": 22109,
+   "top_municipios": [
+    {
+     "codigo": 139,
+     "nome": "RIO BRANCO",
+     "total": 32952
+    },
+    {
+     "codigo": 107,
+     "nome": "CRUZEIRO DO SUL",
+     "total": 6116
+    },
+    {
+     "codigo": 105,
+     "nome": "BRASILEIA",
+     "total": 1849
+    },
+    {
+     "codigo": 145,
+     "nome": "SENA MADUREIRA",
+     "total": 1675
+    },
+    {
+     "codigo": 147,
+     "nome": "TARAUACA",
+     "total": 1461
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 3915
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 2346
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 1607
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 1483
+    },
+    {
+     "codigo": 5611203,
+     "descricao": "Lanchonetes, casas de chá, de sucos e similares",
+     "total": 1140
+    }
+   ]
+  },
+  "AL": {
+   "total": 233193,
+   "com_telefone": 223382,
+   "novas_12m": 39274,
+   "mei": 120512,
+   "top_municipios": [
+    {
+     "codigo": 2785,
+     "nome": "MACEIO",
+     "total": 113662
+    },
+    {
+     "codigo": 2705,
+     "nome": "ARAPIRACA",
+     "total": 21585
+    },
+    {
+     "codigo": 2853,
+     "nome": "RIO LARGO",
+     "total": 5967
+    },
+    {
+     "codigo": 2793,
+     "nome": "MARECHAL DEODORO",
+     "total": 5663
+    },
+    {
+     "codigo": 2833,
+     "nome": "PENEDO",
+     "total": 4399
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 11004
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 7672
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 7467
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 5661
+    },
+    {
+     "codigo": 5611203,
+     "descricao": "Lanchonetes, casas de chá, de sucos e similares",
+     "total": 5510
+    }
+   ]
+  },
+  "AM": {
+   "total": 284560,
+   "com_telefone": 275874,
+   "novas_12m": 56934,
+   "mei": 132035,
+   "top_municipios": [
+    {
+     "codigo": 255,
+     "nome": "MANAUS",
+     "total": 217243
+    },
+    {
+     "codigo": 269,
+     "nome": "PARINTINS",
+     "total": 5136
+    },
+    {
+     "codigo": 253,
+     "nome": "MANACAPURU",
+     "total": 4722
+    },
+    {
+     "codigo": 241,
+     "nome": "ITACOATIARA",
+     "total": 4653
+    },
+    {
+     "codigo": 235,
+     "nome": "HUMAITA",
+     "total": 3649
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 12664
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 11956
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 7814
+    },
+    {
+     "codigo": 8219999,
+     "descricao": "Preparação de documentos e serviços especializados de apoio administrativo não especificados anteriormente",
+     "total": 6556
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 6505
+    }
+   ]
+  },
+  "AP": {
+   "total": 50869,
+   "com_telefone": 48775,
+   "novas_12m": 9627,
+   "mei": 19464,
+   "top_municipios": [
+    {
+     "codigo": 605,
+     "nome": "MACAPA",
+     "total": 35807
+    },
+    {
+     "codigo": 615,
+     "nome": "SANTANA",
+     "total": 6367
+    },
+    {
+     "codigo": 609,
+     "nome": "OIAPOQUE",
+     "total": 2263
+    },
+    {
+     "codigo": 613,
+     "nome": "LARANJAL DO JARI",
+     "total": 1685
+    },
+    {
+     "codigo": 671,
+     "nome": "PORTO GRANDE",
+     "total": 840
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 3353
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 2224
+    },
+    {
+     "codigo": 5611201,
+     "descricao": "Restaurantes e similares",
+     "total": 1429
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 1237
+    },
+    {
+     "codigo": 5611203,
+     "descricao": "Lanchonetes, casas de chá, de sucos e similares",
+     "total": 1061
+    }
+   ]
+  },
+  "BA": {
+   "total": 1257739,
+   "com_telefone": 1207458,
+   "novas_12m": 195731,
+   "mei": 630993,
+   "top_municipios": [
+    {
+     "codigo": 3849,
+     "nome": "SALVADOR",
+     "total": 330609
+    },
+    {
+     "codigo": 3515,
+     "nome": "FEIRA DE SANTANA",
+     "total": 78143
+    },
+    {
+     "codigo": 3965,
+     "nome": "VITORIA DA CONQUISTA",
+     "total": 49446
+    },
+    {
+     "codigo": 3685,
+     "nome": "LAURO DE FREITAS",
+     "total": 40568
+    },
+    {
+     "codigo": 3413,
+     "nome": "CAMACARI",
+     "total": 33850
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 51924
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 44358
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 38840
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 32402
+    },
+    {
+     "codigo": 9430800,
+     "descricao": "Atividades de associações de defesa de direitos sociais",
+     "total": 23277
+    }
+   ]
+  },
+  "CE": {
+   "total": 747141,
+   "com_telefone": 710042,
+   "novas_12m": 130052,
+   "mei": 361102,
+   "top_municipios": [
+    {
+     "codigo": 1389,
+     "nome": "FORTALEZA",
+     "total": 341526
+    },
+    {
+     "codigo": 1373,
+     "nome": "CAUCAIA",
+     "total": 28270
+    },
+    {
+     "codigo": 1447,
+     "nome": "JUAZEIRO DO NORTE",
+     "total": 27016
+    },
+    {
+     "codigo": 1585,
+     "nome": "MARACANAU",
+     "total": 21124
+    },
+    {
+     "codigo": 1559,
+     "nome": "SOBRAL",
+     "total": 17847
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 33052
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 29327
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 24391
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 21690
+    },
+    {
+     "codigo": 5611201,
+     "descricao": "Restaurantes e similares",
+     "total": 14502
+    }
+   ]
+  },
+  "DF": {
+   "total": 476086,
+   "com_telefone": 458504,
+   "novas_12m": 89448,
+   "mei": 210405,
+   "top_municipios": [
+    {
+     "codigo": 9701,
+     "nome": "BRASILIA",
+     "total": 476086
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 16696
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 14464
+    },
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 13529
+    },
+    {
+     "codigo": 8219999,
+     "descricao": "Preparação de documentos e serviços especializados de apoio administrativo não especificados anteriormente",
+     "total": 10949
+    },
+    {
+     "codigo": 4930201,
+     "descricao": "Transporte rodoviário de carga, exceto produtos perigosos e mudanças, municipal.",
+     "total": 8391
+    }
+   ]
+  },
+  "ES": {
+   "total": 611256,
+   "com_telefone": 589245,
+   "novas_12m": 101782,
+   "mei": 338526,
+   "top_municipios": [
+    {
+     "codigo": 5703,
+     "nome": "VILA VELHA",
+     "total": 93510
+    },
+    {
+     "codigo": 5699,
+     "nome": "SERRA",
+     "total": 88485
+    },
+    {
+     "codigo": 5705,
+     "nome": "VITORIA",
+     "total": 80775
+    },
+    {
+     "codigo": 5625,
+     "nome": "CARIACICA",
+     "total": 52976
+    },
+    {
+     "codigo": 5623,
+     "nome": "CACHOEIRO DE ITAPEMIRIM",
+     "total": 29993
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 25336
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 22586
+    },
+    {
+     "codigo": 4399103,
+     "descricao": "Obras de alvenaria",
+     "total": 20236
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 19916
+    },
+    {
+     "codigo": 8219999,
+     "descricao": "Preparação de documentos e serviços especializados de apoio administrativo não especificados anteriormente",
+     "total": 13128
+    }
+   ]
+  },
+  "GO": {
+   "total": 1058127,
+   "com_telefone": 1024932,
+   "novas_12m": 188714,
+   "mei": 545401,
+   "top_municipios": [
+    {
+     "codigo": 9373,
+     "nome": "GOIANIA",
+     "total": 329386
+    },
+    {
+     "codigo": 9227,
+     "nome": "APARECIDA DE GOIANIA",
+     "total": 87272
+    },
+    {
+     "codigo": 9221,
+     "nome": "ANAPOLIS",
+     "total": 64241
+    },
+    {
+     "codigo": 9571,
+     "nome": "RIO VERDE",
+     "total": 37720
+    },
+    {
+     "codigo": 9445,
+     "nome": "LUZIANIA",
+     "total": 22555
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 40734
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 36831
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 36811
+    },
+    {
+     "codigo": 4399103,
+     "descricao": "Obras de alvenaria",
+     "total": 25756
+    },
+    {
+     "codigo": 8219999,
+     "descricao": "Preparação de documentos e serviços especializados de apoio administrativo não especificados anteriormente",
+     "total": 24846
+    }
+   ]
+  },
+  "MA": {
+   "total": 373965,
+   "com_telefone": 352446,
+   "novas_12m": 61084,
+   "mei": 147078,
+   "top_municipios": [
+    {
+     "codigo": 921,
+     "nome": "SAO LUIS",
+     "total": 116695
+    },
+    {
+     "codigo": 803,
+     "nome": "IMPERATRIZ",
+     "total": 32580
+    },
+    {
+     "codigo": 889,
+     "nome": "SAO JOSE DE RIBAMAR",
+     "total": 14875
+    },
+    {
+     "codigo": 727,
+     "nome": "BALSAS",
+     "total": 10685
+    },
+    {
+     "codigo": 937,
+     "nome": "TIMON",
+     "total": 10066
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 16522
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 15367
+    },
+    {
+     "codigo": 9430800,
+     "descricao": "Atividades de associações de defesa de direitos sociais",
+     "total": 11721
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 8840
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 8328
+    }
+   ]
+  },
+  "MG": {
+   "total": 2959781,
+   "com_telefone": 2847808,
+   "novas_12m": 467227,
+   "mei": 1555584,
+   "top_municipios": [
+    {
+     "codigo": 4123,
+     "nome": "BELO HORIZONTE",
+     "total": 548322
+    },
+    {
+     "codigo": 5403,
+     "nome": "UBERLANDIA",
+     "total": 149168
+    },
+    {
+     "codigo": 4371,
+     "nome": "CONTAGEM",
+     "total": 111329
+    },
+    {
+     "codigo": 4733,
+     "nome": "JUIZ DE FORA",
+     "total": 90820
+    },
+    {
+     "codigo": 4133,
+     "nome": "BETIM",
+     "total": 62789
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 112325
+    },
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 111496
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 87677
+    },
+    {
+     "codigo": 4399103,
+     "descricao": "Obras de alvenaria",
+     "total": 86477
+    },
+    {
+     "codigo": 8219999,
+     "descricao": "Preparação de documentos e serviços especializados de apoio administrativo não especificados anteriormente",
+     "total": 59777
+    }
+   ]
+  },
+  "MS": {
+   "total": 386464,
+   "com_telefone": 372551,
+   "novas_12m": 64537,
+   "mei": 191054,
+   "top_municipios": [
+    {
+     "codigo": 9051,
+     "nome": "CAMPO GRANDE",
+     "total": 158558
+    },
+    {
+     "codigo": 9073,
+     "nome": "DOURADOS",
+     "total": 38421
+    },
+    {
+     "codigo": 9165,
+     "nome": "TRES LAGOAS",
+     "total": 19027
+    },
+    {
+     "codigo": 9131,
+     "nome": "PONTA PORA",
+     "total": 10842
+    },
+    {
+     "codigo": 9063,
+     "nome": "CORUMBA",
+     "total": 9093
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 17556
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 13390
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 11771
+    },
+    {
+     "codigo": 4399103,
+     "descricao": "Obras de alvenaria",
+     "total": 11697
+    },
+    {
+     "codigo": 4930202,
+     "descricao": "Transporte rodoviário de carga, exceto produtos perigosos e mudanças, intermunicipal, interestadual e internacional",
+     "total": 9681
+    }
+   ]
+  },
+  "MT": {
+   "total": 569069,
+   "com_telefone": 554447,
+   "novas_12m": 105557,
+   "mei": 270884,
+   "top_municipios": [
+    {
+     "codigo": 9067,
+     "nome": "CUIABA",
+     "total": 129668
+    },
+    {
+     "codigo": 9167,
+     "nome": "VARZEA GRANDE",
+     "total": 41189
+    },
+    {
+     "codigo": 9151,
+     "nome": "RONDONOPOLIS",
+     "total": 40108
+    },
+    {
+     "codigo": 8985,
+     "nome": "SINOP",
+     "total": 38242
+    },
+    {
+     "codigo": 9907,
+     "nome": "SORRISO",
+     "total": 22827
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 21059
+    },
+    {
+     "codigo": 4930202,
+     "descricao": "Transporte rodoviário de carga, exceto produtos perigosos e mudanças, intermunicipal, interestadual e internacional",
+     "total": 20774
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 18653
+    },
+    {
+     "codigo": 4399103,
+     "descricao": "Obras de alvenaria",
+     "total": 18297
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 18011
+    }
+   ]
+  },
+  "PA": {
+   "total": 509081,
+   "com_telefone": 491407,
+   "novas_12m": 89940,
+   "mei": 234337,
+   "top_municipios": [
+    {
+     "codigo": 427,
+     "nome": "BELEM",
+     "total": 125498
+    },
+    {
+     "codigo": 415,
+     "nome": "ANANINDEUA",
+     "total": 42399
+    },
+    {
+     "codigo": 535,
+     "nome": "SANTAREM",
+     "total": 28710
+    },
+    {
+     "codigo": 483,
+     "nome": "MARABA",
+     "total": 24341
+    },
+    {
+     "codigo": 595,
+     "nome": "PARAUAPEBAS",
+     "total": 24177
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 25640
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 17296
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 12889
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 12868
+    },
+    {
+     "codigo": 5611201,
+     "descricao": "Restaurantes e similares",
+     "total": 10952
+    }
+   ]
+  },
+  "PB": {
+   "total": 352131,
+   "com_telefone": 332843,
+   "novas_12m": 57816,
+   "mei": 180412,
+   "top_municipios": [
+    {
+     "codigo": 2051,
+     "nome": "JOAO PESSOA",
+     "total": 133458
+    },
+    {
+     "codigo": 1981,
+     "nome": "CAMPINA GRANDE",
+     "total": 48157
+    },
+    {
+     "codigo": 2117,
+     "nome": "PATOS",
+     "total": 10355
+    },
+    {
+     "codigo": 2175,
+     "nome": "SANTA RITA",
+     "total": 9486
+    },
+    {
+     "codigo": 1965,
+     "nome": "CABEDELO",
+     "total": 8255
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 13640
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 11296
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 10337
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 8405
+    },
+    {
+     "codigo": 8112500,
+     "descricao": "Condomínios prediais",
+     "total": 8239
+    }
+   ]
+  },
+  "PE": {
+   "total": 736761,
+   "com_telefone": 703698,
+   "novas_12m": 127999,
+   "mei": 387612,
+   "top_municipios": [
+    {
+     "codigo": 2531,
+     "nome": "RECIFE",
+     "total": 210923
+    },
+    {
+     "codigo": 2457,
+     "nome": "JABOATAO DOS GUARARAPES",
+     "total": 58397
+    },
+    {
+     "codigo": 2381,
+     "nome": "CARUARU",
+     "total": 48361
+    },
+    {
+     "codigo": 2521,
+     "nome": "PETROLINA",
+     "total": 41398
+    },
+    {
+     "codigo": 2491,
+     "nome": "OLINDA",
+     "total": 36248
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 29307
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 22729
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 19561
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 14818
+    },
+    {
+     "codigo": 5611203,
+     "descricao": "Lanchonetes, casas de chá, de sucos e similares",
+     "total": 14691
+    }
+   ]
+  },
+  "PI": {
+   "total": 236203,
+   "com_telefone": 221596,
+   "novas_12m": 34577,
+   "mei": 99249,
+   "top_municipios": [
+    {
+     "codigo": 1219,
+     "nome": "TERESINA",
+     "total": 99259
+    },
+    {
+     "codigo": 1153,
+     "nome": "PARNAIBA",
+     "total": 13395
+    },
+    {
+     "codigo": 1159,
+     "nome": "PICOS",
+     "total": 8584
+    },
+    {
+     "codigo": 1077,
+     "nome": "FLORIANO",
+     "total": 6325
+    },
+    {
+     "codigo": 1167,
+     "nome": "PIRIPIRI",
+     "total": 3875
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 11638
+    },
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 10950
+    },
+    {
+     "codigo": 9430800,
+     "descricao": "Atividades de associações de defesa de direitos sociais",
+     "total": 7187
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 6648
+    },
+    {
+     "codigo": 9492800,
+     "descricao": "Atividades de organizações políticas",
+     "total": 5017
+    }
+   ]
+  },
+  "PR": {
+   "total": 2029157,
+   "com_telefone": 1935912,
+   "novas_12m": 320566,
+   "mei": 964822,
+   "top_municipios": [
+    {
+     "codigo": 7535,
+     "nome": "CURITIBA",
+     "total": 480639
+    },
+    {
+     "codigo": 7667,
+     "nome": "LONDRINA",
+     "total": 115745
+    },
+    {
+     "codigo": 7691,
+     "nome": "MARINGA",
+     "total": 111576
+    },
+    {
+     "codigo": 7493,
+     "nome": "CASCAVEL",
+     "total": 72069
+    },
+    {
+     "codigo": 7777,
+     "nome": "PONTA GROSSA",
+     "total": 64211
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 70291
+    },
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 67917
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 63212
+    },
+    {
+     "codigo": 4399103,
+     "descricao": "Obras de alvenaria",
+     "total": 63171
+    },
+    {
+     "codigo": 8219999,
+     "descricao": "Preparação de documentos e serviços especializados de apoio administrativo não especificados anteriormente",
+     "total": 50935
+    }
+   ]
+  },
+  "RJ": {
+   "total": 2317296,
+   "com_telefone": 2183517,
+   "novas_12m": 377941,
+   "mei": 1324948,
+   "top_municipios": [
+    {
+     "codigo": 6001,
+     "nome": "RIO DE JANEIRO",
+     "total": 1059224
+    },
+    {
+     "codigo": 5833,
+     "nome": "DUQUE DE CAXIAS",
+     "total": 101346
+    },
+    {
+     "codigo": 5865,
+     "nome": "NITEROI",
+     "total": 101209
+    },
+    {
+     "codigo": 5897,
+     "nome": "SAO GONCALO",
+     "total": 96613
+    },
+    {
+     "codigo": 5869,
+     "nome": "NOVA IGUACU",
+     "total": 93436
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 103272
+    },
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 74562
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 64414
+    },
+    {
+     "codigo": 5620104,
+     "descricao": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar",
+     "total": 54390
+    },
+    {
+     "codigo": 4399103,
+     "descricao": "Obras de alvenaria",
+     "total": 51208
+    }
+   ]
+  },
+  "RN": {
+   "total": 312096,
+   "com_telefone": 299989,
+   "novas_12m": 46962,
+   "mei": 158021,
+   "top_municipios": [
+    {
+     "codigo": 1761,
+     "nome": "NATAL",
+     "total": 111493
+    },
+    {
+     "codigo": 1779,
+     "nome": "PARNAMIRIM",
+     "total": 32025
+    },
+    {
+     "codigo": 1759,
+     "nome": "MOSSORO",
+     "total": 29863
+    },
+    {
+     "codigo": 1837,
+     "nome": "SAO GONCALO DO AMARANTE",
+     "total": 9320
+    },
+    {
+     "codigo": 1639,
+     "nome": "CAICO",
+     "total": 6416
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 14238
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 11055
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 7815
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 7656
+    },
+    {
+     "codigo": 5611203,
+     "descricao": "Lanchonetes, casas de chá, de sucos e similares",
+     "total": 5910
+    }
+   ]
+  },
+  "RO": {
+   "total": 174109,
+   "com_telefone": 169606,
+   "novas_12m": 31819,
+   "mei": 83003,
+   "top_municipios": [
+    {
+     "codigo": 3,
+     "nome": "PORTO VELHO",
+     "total": 53925
+    },
+    {
+     "codigo": 5,
+     "nome": "JI-PARANA",
+     "total": 18141
+    },
+    {
+     "codigo": 13,
+     "nome": "VILHENA",
+     "total": 15212
+    },
+    {
+     "codigo": 7,
+     "nome": "ARIQUEMES",
+     "total": 12479
+    },
+    {
+     "codigo": 9,
+     "nome": "CACOAL",
+     "total": 11626
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 7982
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 6525
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 4535
+    },
+    {
+     "codigo": 4399103,
+     "descricao": "Obras de alvenaria",
+     "total": 4488
+    },
+    {
+     "codigo": 4930202,
+     "descricao": "Transporte rodoviário de carga, exceto produtos perigosos e mudanças, intermunicipal, interestadual e internacional",
+     "total": 3781
+    }
+   ]
+  },
+  "RR": {
+   "total": 51765,
+   "com_telefone": 49978,
+   "novas_12m": 9721,
+   "mei": 25267,
+   "top_municipios": [
+    {
+     "codigo": 301,
+     "nome": "BOA VISTA",
+     "total": 42718
+    },
+    {
+     "codigo": 36,
+     "nome": "RORAINOPOLIS",
+     "total": 2039
+    },
+    {
+     "codigo": 34,
+     "nome": "PACARAIMA",
+     "total": 906
+    },
+    {
+     "codigo": 303,
+     "nome": "CARACARAI",
+     "total": 896
+    },
+    {
+     "codigo": 309,
+     "nome": "MUCAJAI",
+     "total": 869
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 3262
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 1624
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 1493
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 1373
+    },
+    {
+     "codigo": 5611201,
+     "descricao": "Restaurantes e similares",
+     "total": 1287
+    }
+   ]
+  },
+  "RS": {
+   "total": 1766478,
+   "com_telefone": 1656525,
+   "novas_12m": 262427,
+   "mei": 859450,
+   "top_municipios": [
+    {
+     "codigo": 8801,
+     "nome": "PORTO ALEGRE",
+     "total": 296247
+    },
+    {
+     "codigo": 8599,
+     "nome": "CAXIAS DO SUL",
+     "total": 93276
+    },
+    {
+     "codigo": 8589,
+     "nome": "CANOAS",
+     "total": 59684
+    },
+    {
+     "codigo": 8791,
+     "nome": "PELOTAS",
+     "total": 49221
+    },
+    {
+     "codigo": 8771,
+     "nome": "NOVO HAMBURGO",
+     "total": 47935
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 68042
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 58554
+    },
+    {
+     "codigo": 4399103,
+     "descricao": "Obras de alvenaria",
+     "total": 57468
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 53835
+    },
+    {
+     "codigo": 8112500,
+     "descricao": "Condomínios prediais",
+     "total": 37875
+    }
+   ]
+  },
+  "SC": {
+   "total": 1540315,
+   "com_telefone": 1476627,
+   "novas_12m": 265254,
+   "mei": 750242,
+   "top_municipios": [
+    {
+     "codigo": 8105,
+     "nome": "FLORIANOPOLIS",
+     "total": 157058
+    },
+    {
+     "codigo": 8179,
+     "nome": "JOINVILLE",
+     "total": 133189
+    },
+    {
+     "codigo": 8047,
+     "nome": "BLUMENAU",
+     "total": 83641
+    },
+    {
+     "codigo": 8161,
+     "nome": "ITAJAI",
+     "total": 72915
+    },
+    {
+     "codigo": 8327,
+     "nome": "SAO JOSE",
+     "total": 59606
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 56959
+    },
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 50158
+    },
+    {
+     "codigo": 8219999,
+     "descricao": "Preparação de documentos e serviços especializados de apoio administrativo não especificados anteriormente",
+     "total": 47697
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 47236
+    },
+    {
+     "codigo": 4399103,
+     "descricao": "Obras de alvenaria",
+     "total": 46427
+    }
+   ]
+  },
+  "SE": {
+   "total": 176571,
+   "com_telefone": 168726,
+   "novas_12m": 29549,
+   "mei": 89818,
+   "top_municipios": [
+    {
+     "codigo": 3105,
+     "nome": "ARACAJU",
+     "total": 85527
+    },
+    {
+     "codigo": 3195,
+     "nome": "NOSSA SENHORA DO SOCORRO",
+     "total": 13420
+    },
+    {
+     "codigo": 3157,
+     "nome": "ITABAIANA",
+     "total": 8539
+    },
+    {
+     "codigo": 3233,
+     "nome": "SAO CRISTOVAO",
+     "total": 6574
+    },
+    {
+     "codigo": 3169,
+     "nome": "LAGARTO",
+     "total": 6213
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 7761
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 6310
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 4761
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 4548
+    },
+    {
+     "codigo": 9430800,
+     "descricao": "Atividades de associações de defesa de direitos sociais",
+     "total": 3343
+    }
+   ]
+  },
+  "SP": {
+   "total": 8738347,
+   "com_telefone": 8320735,
+   "novas_12m": 1359990,
+   "mei": 3949702,
+   "top_municipios": [
+    {
+     "codigo": 7107,
+     "nome": "SAO PAULO",
+     "total": 2726727
+    },
+    {
+     "codigo": 6291,
+     "nome": "CAMPINAS",
+     "total": 235558
+    },
+    {
+     "codigo": 6477,
+     "nome": "GUARULHOS",
+     "total": 210337
+    },
+    {
+     "codigo": 6969,
+     "nome": "RIBEIRAO PRETO",
+     "total": 158453
+    },
+    {
+     "codigo": 7145,
+     "nome": "SOROCABA",
+     "total": 141224
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 8219999,
+     "descricao": "Preparação de documentos e serviços especializados de apoio administrativo não especificados anteriormente",
+     "total": 287405
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 277641
+    },
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 273185
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 253126
+    },
+    {
+     "codigo": 4930201,
+     "descricao": "Transporte rodoviário de carga, exceto produtos perigosos e mudanças, municipal.",
+     "total": 188695
+    }
+   ]
+  },
+  "TO": {
+   "total": 179337,
+   "com_telefone": 173356,
+   "novas_12m": 29053,
+   "mei": 86437,
+   "top_municipios": [
+    {
+     "codigo": 9733,
+     "nome": "PALMAS",
+     "total": 60594
+    },
+    {
+     "codigo": 9241,
+     "nome": "ARAGUAINA",
+     "total": 24166
+    },
+    {
+     "codigo": 9385,
+     "nome": "GURUPI",
+     "total": 12409
+    },
+    {
+     "codigo": 9559,
+     "nome": "PORTO NACIONAL",
+     "total": 8663
+    },
+    {
+     "codigo": 9519,
+     "nome": "PARAISO DO TOCANTINS",
+     "total": 7753
+    }
+   ],
+   "top_cnaes": [
+    {
+     "codigo": 4781400,
+     "descricao": "Comércio varejista de artigos do vestuário e acessórios",
+     "total": 6852
+    },
+    {
+     "codigo": 9602501,
+     "descricao": "Cabeleireiros, manicure e pedicure",
+     "total": 5501
+    },
+    {
+     "codigo": 4399103,
+     "descricao": "Obras de alvenaria",
+     "total": 4978
+    },
+    {
+     "codigo": 7319002,
+     "descricao": "Promoção de vendas",
+     "total": 4923
+    },
+    {
+     "codigo": 4712100,
+     "descricao": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns",
+     "total": 4601
+    }
+   ]
+  }
+ }
+}

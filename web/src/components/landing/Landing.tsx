@@ -7,7 +7,8 @@ import {
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { type Busca, type PontoMapa, type Resumo, type Stats, urlApi, useApi } from "@/lib/api";
+import { type Busca, type PontoMapa, urlApi } from "@/lib/api";
+import retrato from "@/lib/retrato-landing.json";
 import { escala, iniciais, nomeProprio, numero, porcentagem, tom } from "@/lib/formato";
 import { Celular } from "../automacao/Automacao";
 import { tituloCidade } from "../Filtros";
@@ -25,11 +26,29 @@ const NOMES_UF: Record<string, string> = {
   RO: "Rondônia", RR: "Roraima", RS: "Rio Grande do Sul", SC: "Santa Catarina", SE: "Sergipe", SP: "São Paulo", TO: "Tocantins",
 };
 
+// Números da landing vêm de um retrato fixo da base (scripts/snapshot-landing.mjs, rodado a cada carga mensal):
+// a página abre sem consultar a API. Só a busca ao vivo, disparada pelo visitante, vai ao servidor.
+type ResumoLanding = (typeof retrato.resumos)["BR"];
+const RESUMOS: Record<string, ResumoLanding> = retrato.resumos;
+const MES = retrato.mes?.split("-").reverse().join("/");
+
+/** Pontos do mapa: arquivo estático na CDN, baixado junto com o mapa (que já é carregado sob demanda). */
+function useMapaBrasil() {
+  const [pontos, setPontos] = useState<PontoMapa[] | null>(null);
+  useEffect(() => {
+    fetch("/dados/mapa-br.json")
+      .then((r) => r.json())
+      .then((linhas: [number, number, number, number, string][]) =>
+        setPontos(linhas.map(([codigo, lat, lng, total, nome]) => ({ codigo, lat, lng, total, nome }))))
+      .catch(() => {});
+  }, []);
+  return pontos;
+}
+
 export function Landing() {
-  const { dados: br } = useApi<Resumo>(urlApi("resumo"));
-  const { dados: mapa } = useApi<PontoMapa[]>(urlApi("mapa"));
-  const { dados: stats } = useApi<Stats>(urlApi("stats"));
-  const mes = stats?.ultima_carga?.mes_referencia.split("-").reverse().join("/");
+  const br = RESUMOS.BR;
+  const mapa = useMapaBrasil();
+  const mes = MES;
 
   return (
     <div className="overflow-x-clip">
@@ -51,7 +70,7 @@ export function Landing() {
             .
           </h1>
           <p className="mt-5 max-w-xl text-lg text-ink/65">
-            {br ? <Contador valor={br.total} formato={escala} /> : "28M"} de empresas ativas da Receita Federal, com filtros por cidade,
+            <Contador valor={br.total} formato={escala} /> de empresas ativas da Receita Federal, com filtros por cidade,
             segmento e porte, telefone e WhatsApp, num só lugar. Descreva o seu cliente ideal:
           </p>
           <BuscaAoVivo />
@@ -61,14 +80,14 @@ export function Landing() {
           <MapaCalor pontos={mapa} uf="Brasil" selecionadas={[]} onCidade={(c) => { window.location.href = `/app?uf=BR&municipio=${c}`; }} />
           <Flutuante className="-left-3 bottom-24 sm:-left-8">
             <Database className="size-4 text-lime" />
-            <span><strong className="text-lg">{br ? <Contador valor={br.total} formato={escala} /> : "—"}</strong> empresas ativas</span>
+            <span><strong className="text-lg"><Contador valor={br.total} formato={escala} /></strong> empresas ativas</span>
           </Flutuante>
           <Flutuante className="-right-2 top-24 sm:-right-6" claro>
             <IconeWhatsApp className="size-5" />
-            <span><strong>{br ? porcentagem(br.com_telefone, br.total) : "—"}</strong> com telefone</span>
+            <span><strong>{porcentagem(br.com_telefone, br.total)}</strong> com telefone</span>
           </Flutuante>
           <Flutuante className="bottom-6 right-24 hidden sm:flex" claro>
-            <MapPin className="size-4" /> {mapa ? numero(mapa.length) : "—"} municípios
+            <MapPin className="size-4" /> {numero(retrato.municipios)} municípios
           </Flutuante>
         </Revelar>
       </header>
@@ -233,17 +252,17 @@ const mascararNome = (n: string) => {
 
 
 // ---------------------------------------------------------------------------
-// Seletor de estados (números reais)
+// Seletor de estados (números reais do retrato da base)
 
 function Estados() {
   const [uf, setUf] = useState("SP");
-  const { dados } = useApi<Resumo>(urlApi("resumo", new URLSearchParams({ uf })));
+  const dados = RESUMOS[uf];
   const max = Math.max(1, ...(dados?.top_municipios.map((m) => m.total) ?? [1]));
 
   return (
     <section id="estados" className="scroll-mt-24">
       <Revelar>
-        <Titulo selo="Dados ao vivo" titulo="O Brasil inteiro, estado por estado" sub="Clique num estado para ver o tamanho do seu mercado lá. Números reais da base atual." />
+        <Titulo selo="Dados reais" titulo="O Brasil inteiro, estado por estado" sub={`Clique num estado para ver o tamanho do seu mercado lá. Números reais da base${MES ? ` de ${MES}` : ""}.`} />
       </Revelar>
       <Revelar atraso={100} className="mt-8 grid gap-4 lg:grid-cols-[1fr_1.2fr]">
         <div className="glass flex flex-wrap content-start gap-1.5 rounded-[var(--radius-card)] p-5">

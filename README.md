@@ -58,6 +58,15 @@ npm --prefix web run dev
 Filtros ficam na URL (buscas compartilháveis). Login, CRM, favoritos e buscas salvas ficam no Supabase
 (migrações em `supabase/migrations`, RLS por usuário).
 
+### Dados fixos da landing
+
+A landing não consulta a API ao abrir: usa um retrato da base (`web/src/lib/retrato-landing.json` e
+`web/public/dados/mapa-br.json`). Depois de cada carga mensal, gere de novo e faça o commit:
+
+```bash
+cd web && API_URL=https://<api> API_KEY=<chave> node scripts/snapshot-landing.mjs
+```
+
 ### Deploy na Vercel
 
 - **Root Directory:** `web`
