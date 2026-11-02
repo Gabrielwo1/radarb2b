@@ -4,20 +4,15 @@ import {
   ArrowRight, ArrowUp, BadgeCheck, Building2, Check, ChevronDown, Database, Download, Filter, KanbanSquare, Loader2,
   MapPin, Radar, ShieldCheck, Shapes, Sparkles, Zap,
 } from "lucide-react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { type Busca, type PontoMapa, urlApi } from "@/lib/api";
+import type { Busca } from "@/lib/api";
 import retrato from "@/lib/retrato-landing.json";
-import { escala, iniciais, nomeProprio, numero, porcentagem, tom } from "@/lib/formato";
-import { Celular } from "../automacao/Automacao";
-import { tituloCidade } from "../Filtros";
+import { escala, iniciais, nomeProprio, numero, porcentagem, tituloCidade, tom } from "@/lib/formato";
+import { Celular } from "../automacao/Celular";
+import { MapaBrasil } from "./MapaBrasil";
 import { IconeWhatsApp, cx } from "../ui";
 
-const MapaCalor = dynamic(() => import("../MapaCalor").then((m) => m.MapaCalor), {
-  ssr: false,
-  loading: () => <div className="glass skeleton h-full rounded-[var(--radius-card)]" />,
-});
 
 const NOMES_UF: Record<string, string> = {
   AC: "Acre", AL: "Alagoas", AM: "Amazonas", AP: "Amapá", BA: "Bahia", CE: "Ceará", DF: "Distrito Federal",
@@ -32,22 +27,9 @@ type ResumoLanding = (typeof retrato.resumos)["BR"];
 const RESUMOS: Record<string, ResumoLanding> = retrato.resumos;
 const MES = retrato.mes?.split("-").reverse().join("/");
 
-/** Pontos do mapa: arquivo estático na CDN, baixado junto com o mapa (que já é carregado sob demanda). */
-function useMapaBrasil() {
-  const [pontos, setPontos] = useState<PontoMapa[] | null>(null);
-  useEffect(() => {
-    fetch("/dados/mapa-br.json")
-      .then((r) => r.json())
-      .then((linhas: [number, number, number, number, string][]) =>
-        setPontos(linhas.map(([codigo, lat, lng, total, nome]) => ({ codigo, lat, lng, total, nome }))))
-      .catch(() => {});
-  }, []);
-  return pontos;
-}
 
 export function Landing() {
   const br = RESUMOS.BR;
-  const mapa = useMapaBrasil();
   const mes = MES;
 
   return (
@@ -57,7 +39,8 @@ export function Landing() {
       {/* Hero */}
       <header className="relative mx-auto grid max-w-[1440px] items-center gap-10 px-4 pb-16 pt-10 sm:px-6 lg:grid-cols-[1fr_1.05fr] lg:px-8 lg:pt-16">
         <div className="pointer-events-none absolute -left-40 top-0 -z-10 size-[520px] rounded-full bg-lime/25 blur-[140px]" />
-        <Revelar>
+        {/* Conteúdo acima da dobra aparece já no HTML (sem esperar o JavaScript): melhor LCP */}
+        <div>
           <span className="inline-flex items-center gap-2 rounded-full border border-white bg-white/70 py-1 pl-1 pr-3 text-xs text-ink/70">
             <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] text-lime">Novo</span> Busca por linguagem natural + CRM integrado
           </span>
@@ -70,17 +53,17 @@ export function Landing() {
             .
           </h1>
           <p className="mt-5 max-w-xl text-lg text-ink/65">
-            <Contador valor={br.total} formato={escala} /> de empresas ativas da Receita Federal, com filtros por cidade,
+            {escala(br.total)} de empresas ativas da Receita Federal, com filtros por cidade,
             segmento e porte, telefone e WhatsApp, num só lugar. Descreva o seu cliente ideal:
           </p>
           <BuscaAoVivo />
-        </Revelar>
+        </div>
 
-        <Revelar atraso={150} className="relative h-[460px] sm:h-[560px]">
-          <MapaCalor pontos={mapa} uf="Brasil" selecionadas={[]} onCidade={(c) => { window.location.href = `/app?uf=BR&municipio=${c}`; }} />
+        <div className="relative h-[460px] [animation:aparecer_.7s_ease-out_both] sm:h-[560px]">
+          <MapaBrasil municipios={retrato.municipios} />
           <Flutuante className="-left-3 bottom-24 sm:-left-8">
             <Database className="size-4 text-lime" />
-            <span><strong className="text-lg"><Contador valor={br.total} formato={escala} /></strong> empresas ativas</span>
+            <span><strong className="text-lg">{escala(br.total)}</strong> empresas ativas</span>
           </Flutuante>
           <Flutuante className="-right-2 top-24 sm:-right-6" claro>
             <IconeWhatsApp className="size-5" />
@@ -89,7 +72,7 @@ export function Landing() {
           <Flutuante className="bottom-6 right-24 hidden sm:flex" claro>
             <MapPin className="size-4" /> {numero(retrato.municipios)} municípios
           </Flutuante>
-        </Revelar>
+        </div>
       </header>
 
       {/* Faixa de confiança */}
@@ -173,7 +156,7 @@ function BuscaAoVivo() {
       const api = new URLSearchParams(q);
       if (api.get("uf") === "BR") api.delete("uf");
       api.set("limit", "3");
-      const busca: Busca = await fetch(urlApi("empresas", api)).then((x) => x.json());
+      const busca: Busca = await fetch(`/api/b2b/empresas?${api}`).then((x) => x.json());
       setR({ i, busca, link: `/app?${q}` });
       setEstado("pronto");
     } catch {

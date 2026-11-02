@@ -1,4 +1,4 @@
-// Gera os dados fixos da landing (src/lib/retrato-landing.json e public/dados/mapa-br.json).
+// Gera os dados fixos da landing (src/lib/retrato-landing.json e public/dados/pontos-br.json).
 // A landing não consulta a API ao abrir: usa este retrato da base, atualizado a cada carga mensal.
 // Uso: API_URL=https://... API_KEY=... node scripts/snapshot-landing.mjs
 import { mkdir, writeFile } from "node:fs/promises";
@@ -23,8 +23,9 @@ const enxugar = (r) => ({
 const resumos = { BR: enxugar(await get("/resumo")) };
 for (const uf of UFS) resumos[uf] = enxugar(await get(`/resumo?uf=${uf}`));
 const stats = await get("/stats");
-// Mapa compacto em linhas [codigo, lat, lng, total, nome] (servido estático pela CDN, carregado com o mapa)
-const mapa = (await get("/mapa")).map((p) => [p.codigo, +p.lat.toFixed(2), +p.lng.toFixed(2), p.total, p.nome]);
+// Mapa do topo: lista plana [lat×100, lng×100, total, ...] em inteiros (~20 KB comprimido, servido pela CDN)
+const mapa = await get("/mapa");
+const pontos = mapa.flatMap((p) => [Math.round(p.lat * 100), Math.round(p.lng * 100), p.total]);
 
 const dir = new URL("..", import.meta.url);
 await mkdir(new URL("src/lib/", dir), { recursive: true });
@@ -33,5 +34,5 @@ await writeFile(
   new URL("src/lib/retrato-landing.json", dir),
   JSON.stringify({ mes: stats.ultima_carga?.mes_referencia ?? null, municipios: mapa.length, resumos }, null, 1) + "\n",
 );
-await writeFile(new URL("public/dados/mapa-br.json", dir), JSON.stringify(mapa));
+await writeFile(new URL("public/dados/pontos-br.json", dir), JSON.stringify(pontos));
 console.log(`ok: ${Object.keys(resumos).length} resumos, ${mapa.length} pontos, base ${stats.ultima_carga?.mes_referencia}`);

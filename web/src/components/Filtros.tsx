@@ -8,7 +8,9 @@ import { type ReactNode, useEffect, useState } from "react";
 import { type Cnae, type Municipio, urlApi, useApi, useDebounce } from "@/lib/api";
 import { PORTES, UF_PADRAO, contarFiltros, dataRelativa, lista } from "@/lib/filtros";
 import { useLocal } from "@/lib/local";
-import { escala, numero } from "@/lib/formato";
+import { escala, numero, tituloCidade } from "@/lib/formato";
+
+export { tituloCidade };
 import { Check, Contador, Switch, cx } from "./ui";
 
 const UFS = ["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"];
@@ -420,10 +422,3 @@ const periodo = (de: string | null, ate: string | null) => `${de ? dataBr(de) : 
 const resumoLista = (n: number, vazio: string, um: string, varios: string) => (n === 0 ? vazio : `${n} ${n === 1 ? um : varios}`);
 const semAcento = (v: string) => v.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
-export function tituloCidade(nome: string) {
-  return nome
-    .toLowerCase()
-    .split(" ")
-    .map((p) => (["de", "do", "da", "dos", "das"].includes(p) ? p : p.charAt(0).toUpperCase() + p.slice(1)))
-    .join(" ");
-}

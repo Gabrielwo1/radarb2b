@@ -4,6 +4,15 @@ import { Landing } from "@/components/landing/Landing";
 export const metadata: Metadata = {
   title: "Radar B2B — Encontre as empresas que compram de você",
   description: "28 milhões de empresas ativas da Receita Federal com filtros por cidade, segmento e porte, WhatsApp em um clique e CRM integrado.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: "Radar B2B",
+    locale: "pt_BR",
+    url: "/",
+    title: "Radar B2B — Encontre as empresas que compram de você",
+    description: "28 milhões de empresas ativas da Receita Federal, com filtros por cidade, segmento e porte, WhatsApp e CRM.",
+  },
 };
 
 export default function Page() {

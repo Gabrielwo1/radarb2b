@@ -33,6 +33,9 @@ export async function proxy(request: NextRequest) {
   return resposta;
 }
 
+// Fora do proxy: a landing ("/", estática na CDN), arquivos estáticos e metadados (ícone, imagem de compartilhamento)
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|maplibre-gl-worker.mjs|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|icon|apple-icon|opengraph-image|robots.txt|sitemap.xml|dados/|maplibre-gl-worker.mjs|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|json|mjs)$).+)",
+  ],
 };

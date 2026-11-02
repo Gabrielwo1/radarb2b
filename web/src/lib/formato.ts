@@ -100,3 +100,12 @@ export const cep = (v?: string | null) => (v && /^\d{8}$/.test(v) ? `${v.slice(0
 export function enderecoCurto(e: { tipo_logradouro: string | null; logradouro: string | null; numero: string | null }) {
   return nomeProprio([e.tipo_logradouro, e.logradouro].filter(Boolean).join(" ")) + (e.numero ? `, ${e.numero}` : "");
 }
+
+/** "SAO JOSE DOS PINHAIS" → "Sao Jose dos Pinhais" */
+export function tituloCidade(nome: string) {
+  return nome
+    .toLowerCase()
+    .split(" ")
+    .map((p) => (["de", "do", "da", "dos", "das"].includes(p) ? p : p.charAt(0).toUpperCase() + p.slice(1)))
+    .join(" ");
+}
