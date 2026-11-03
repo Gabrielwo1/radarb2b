@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { type Pagamento, aplicarPagamento, mp, referencia, registrarAssinatura, urlSite } from "@/lib/mercadopago";
+import { enviarEmail } from "@/lib/emails/enviar";
 import { PRECOS, type TipoCompra } from "@/lib/planos";
 import { supabaseServidor } from "@/lib/supabase/server";
 
@@ -35,6 +36,7 @@ export async function POST(req: Request) {
   if (corpo.tipo === "avulso" && !chave) return Response.json({ erro: "Escolha a pesquisa que quer liberar" }, { status: 400 });
   const email = corpo.dados.payer?.email || (claims.email as string | undefined);
   const ref = referencia(user, corpo.tipo, chave);
+  const nome = (claims.user_metadata as { nome?: string } | undefined)?.nome;
 
   try {
     // Mensal no cartão de crédito: assinatura recorrente
@@ -52,7 +54,10 @@ export async function POST(req: Request) {
           status: "authorized",
         }),
       });
-      if (assinatura.status === "authorized") await registrarAssinatura(user, assinatura.id, "authorized");
+      if (assinatura.status === "authorized") {
+        await registrarAssinatura(user, assinatura.id, "authorized");
+        await enviarEmail(email, "assinatura_ativa", { nome, ciclo: "mensal" });
+      }
       return Response.json({ status: assinatura.status === "authorized" ? "approved" : "rejected", assinatura: assinatura.id });
     }
 
@@ -73,8 +78,11 @@ export async function POST(req: Request) {
         metadata: { user_id: user, tipo: corpo.tipo },
       }),
     });
-    await aplicarPagamento(pagamento);
+    await aplicarPagamento({ ...pagamento, payer: { email } });
     const pix = pagamento.point_of_interaction?.transaction_data;
+    if (pagamento.status === "pending" && pix?.qr_code) {
+      await enviarEmail(email, "pix_pendente", { nome, pix: pix.qr_code, valor: preco.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) });
+    }
     return Response.json({
       id: pagamento.id,
       status: pagamento.status,

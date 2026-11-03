@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUp, Loader2, MapPin, Shapes, Sparkles } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { escala } from "@/lib/formato";
 import { exigirLogin } from "@/lib/sessao";
 import { tituloCidade } from "./Filtros";
@@ -18,8 +18,10 @@ type Troca = { id: number; pergunta: string; resultado?: Interpretacao; erro?: s
 
 
 /** Busca conversacional: o texto vira filtros (aplicados na URL) e a resposta mostra o que foi entendido. */
-export function Assistente({ uf, total, onAplicar, abaixo }: {
+export function Assistente({ uf, total, onAplicar, abaixo, inicial }: {
   uf: string;
+  /** Busca vinda de um link (ex.: e-mail com /app?busca=...): roda uma vez ao abrir */
+  inicial?: string | null;
   total: number | null;
   onAplicar: (filtros: Record<string, string>, pergunta: string) => void;
   /** Conteúdo encaixado logo abaixo da caixa (ex.: tab de filtros detalhados) */
@@ -57,6 +59,13 @@ export function Assistente({ uf, total, onAplicar, abaixo }: {
       campo.current?.focus();
     }
   };
+
+  const rodouInicial = useRef(false);
+  useEffect(() => {
+    if (!inicial || rodouInicial.current) return;
+    rodouInicial.current = true;
+    enviar(inicial);
+  }, [inicial]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const ultima = trocas.at(-1);
 

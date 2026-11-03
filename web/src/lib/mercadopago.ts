@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { enviarEmail } from "./emails/enviar";
 import { PRECOS, type TipoCompra } from "./planos";
 
 // Mercado Pago (checkout transparente): o navegador gera o token do cartão / escolhe Pix com os Bricks,
@@ -35,6 +36,7 @@ export type Pagamento = {
   date_approved: string | null;
   date_created: string;
   metadata?: Record<string, unknown>;
+  payer?: { email?: string | null };
   point_of_interaction?: { transaction_data?: { qr_code?: string; qr_code_base64?: string; ticket_url?: string } };
 };
 
@@ -71,6 +73,12 @@ export async function aplicarPagamento(p: Pagamento, preapproval?: string | null
     p_data: p.date_approved ?? p.date_created,
   });
   if (error) throw new Error(error.message);
+  // Liberou agora (primeira vez): avisa por e-mail. Cobranças mensais da assinatura não geram e-mail (o MP envia o recibo).
+  if (data && !preapproval) {
+    const email = p.payer?.email;
+    if (ref.tipo === "avulso") await enviarEmail(email, "pagamento_avulso", { consulta: ref.chave });
+    else await enviarEmail(email, "assinatura_ativa", { ciclo: ref.tipo === "pro_anual" ? "anual" : "mensal" });
+  }
   return data as boolean;
 }
 

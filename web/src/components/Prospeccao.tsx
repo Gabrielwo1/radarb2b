@@ -55,7 +55,7 @@ export function Prospeccao() {
   const ultima = useUltimaBusca();
   useEffect(() => {
     const salva = ultimaBusca();
-    if (!sp.size && salva?.atual) router.replace(`${pathname}?${salva.atual}`, { scroll: false });
+    if (!sp.size && salva?.atual && !sp.get("busca")) router.replace(`${pathname}?${salva.atual}`, { scroll: false });
   }, [sp, router, pathname]);
 
   // Visitante navega livre; qualquer mudança de filtro/aba/ordem pede login antes (e é aplicada depois)
@@ -198,6 +198,7 @@ export function Prospeccao() {
       <Assistente
         key={limpezas}
         uf={uf}
+        inicial={sp.get("busca")}
         total={resumo.carregando ? null : resumo.dados?.total ?? null}
         onAplicar={aplicarInterpretacao}
         abaixo={

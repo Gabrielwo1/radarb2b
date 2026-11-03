@@ -13,5 +13,11 @@
         "service": "web"
       }
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/emails",
+      "schedule": "0 12 * * *"
+    }
   ]
 }
