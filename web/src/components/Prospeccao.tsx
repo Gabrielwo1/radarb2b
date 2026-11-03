@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { type Busca, type Empresa, type PontoMapa, type Resumo as TResumo, type Stats, urlApi, useApi } from "@/lib/api";
-import { type Aba, UF_PADRAO, contarFiltros, lista, queryApi } from "@/lib/filtros";
+import { type Aba, FILTROS_API, UF_PADRAO, contarFiltros, lista, queryApi } from "@/lib/filtros";
 import { useBuscasSalvas, useLocal, useSalvos } from "@/lib/local";
 import { exigirLogin, useSessao } from "@/lib/sessao";
 import { limparBusca, registrarBusca, registrarFiltros, ultimaBusca, useUltimaBusca } from "@/lib/ultimaBusca";
@@ -14,7 +14,7 @@ import { abrirPlanos, atualizarConta, tratar402, useConta } from "@/lib/conta";
 import { chaveBusca } from "@/lib/planos";
 import { Creditos } from "./planos/Planos";
 import { ehCelular, escala, linkWhatsApp } from "@/lib/formato";
-import { Assistente } from "./Assistente";
+import { Assistente, AssistenteLateral, limparConversa, useConversa } from "./Assistente";
 import { Detalhe } from "./Detalhe";
 import { Filtros, TabFiltros } from "./Filtros";
 import { PainelProspects } from "./Lista";
@@ -79,10 +79,9 @@ export function Prospeccao() {
     navegar(q, texto);
   };
 
-  const [limpezas, setLimpezas] = useState(0);
   const limparPesquisa = () => {
     limparBusca();
-    setLimpezas((n) => n + 1); // zera a conversa do chat
+    limparConversa();
     router.replace(pathname, { scroll: false });
   };
 
@@ -169,6 +168,16 @@ export function Prospeccao() {
     window.location.href = urlExportar;
   }, "Crie sua conta para exportar a lista");
 
+  // Chat (topo e lateral): a próxima mensagem refina os filtros que estão na tela
+  const atuais = Object.fromEntries(FILTROS_API.filter((k) => sp.get(k)).map((k) => [k, sp.get(k)!]));
+  const propsChat = {
+    uf,
+    atuais,
+    total: resumo.carregando ? null : resumo.dados?.total ?? null,
+    onAplicar: aplicarInterpretacao,
+    onVerResultados: () => document.getElementById("resultados")?.scrollIntoView({ behavior: "smooth", block: "start" }),
+  };
+
   const exportarQ = new URLSearchParams(apiQ);
   const urlExportar = urlApi("exportar", exportarQ);
   const ultimaCarga = stats?.ultima_carga;
@@ -196,11 +205,8 @@ export function Prospeccao() {
       </div>
 
       <Assistente
-        key={limpezas}
-        uf={uf}
+        {...propsChat}
         inicial={sp.get("busca")}
-        total={resumo.carregando ? null : resumo.dados?.total ?? null}
-        onAplicar={aplicarInterpretacao}
         abaixo={
           <>
             {ultima && (
@@ -234,6 +240,9 @@ export function Prospeccao() {
         </div>
       </div>
 
+      <div id="resultados" className="grid scroll-mt-4 gap-4 xl:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="flex min-w-0 flex-col gap-3">
+      <ResumoBusca total={semSalvos ? 0 : busca.dados?.total ?? null} filtros={contarFiltros(sp)} onAjustar={() => { setFiltrosAbertos(() => true); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
       <PainelProspects
         aba={aba}
         onAba={(a) => definir({ aba: a === "todas" ? null : a })}
@@ -268,7 +277,44 @@ export function Prospeccao() {
           />
         )}
       </PainelProspects>
+      </div>
+      {/* Desktop: o chat acompanha a tabela ao rolar, para refinar sem voltar ao topo */}
+      <div className="hidden xl:block">
+        <div className="sticky top-5"><AssistenteLateral {...propsChat} /></div>
+      </div>
+      </div>
     </main>
+  );
+}
+
+/** Faixa acima da tabela: deixa claro qual busca está na tela (segmento, cidade, total). */
+function ResumoBusca({ total, filtros, onAjustar }: { total: number | null; filtros: number; onAjustar: () => void }) {
+  const { trocas } = useConversa();
+  const r = [...trocas].reverse().find((t) => t.resultado)?.resultado;
+  const segmentos = r?.entendido.segmentos ?? [];
+  const cidades = r?.entendido.cidades ?? [];
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-[28px] bg-ink px-5 py-3.5 text-white">
+      <div className="min-w-0">
+        <p className="text-[11px] uppercase tracking-wide text-white/50">Resultado da busca</p>
+        <p className="text-lg leading-tight tracking-tight">
+          <strong className="text-lime">{total == null ? "…" : total.toLocaleString("pt-BR")}</strong> empresas
+          {filtros === 0 && <span className="text-white/60"> · sem filtros (todas do estado)</span>}
+        </p>
+      </div>
+      <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
+        {segmentos.slice(0, 4).map((c) => (
+          <span key={c.codigo} title={`CNAE ${c.codigo}`} className="max-w-[260px] truncate rounded-full bg-lime px-2.5 py-1 text-xs text-ink">
+            {c.descricao}
+          </span>
+        ))}
+        {segmentos.length > 4 && <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs">+{segmentos.length - 4} segmentos</span>}
+        {cidades.map((c) => <span key={c} className="rounded-full bg-white/10 px-2.5 py-1 text-xs">{c.toLowerCase().replace(/(^|\s)\S/g, (l) => l.toUpperCase())}</span>)}
+      </div>
+      <button type="button" onClick={onAjustar} className="h-9 shrink-0 rounded-full border border-white/20 px-4 text-xs hover:bg-white/10">
+        Ajustar filtros{filtros ? ` (${filtros})` : ""}
+      </button>
+    </div>
   );
 }
 

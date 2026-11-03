@@ -42,7 +42,7 @@ Regras:
 - Se o pedido não for sobre encontrar empresas, devolva tudo vazio e explique em "resposta" o que a busca consegue fazer.`;
 
 export async function POST(req: Request) {
-  const { texto, uf } = (await req.json()) as { texto?: string; uf?: string };
+  const { texto, uf, anterior } = (await req.json()) as { texto?: string; uf?: string; anterior?: Record<string, string> };
   if (!texto?.trim()) return Response.json({ erro: "Escreva o que você procura" }, { status: 400 });
   const ufAtual = (uf ?? "PR").toUpperCase();
 
@@ -50,10 +50,10 @@ export async function POST(req: Request) {
   let motor: "openai" | "claude" | "local";
   try {
     if (process.env.OPENAI_API_KEY) {
-      pedido = await interpretarComOpenAI(texto, ufAtual);
+      pedido = await interpretarComOpenAI(texto, ufAtual, anterior);
       motor = "openai";
     } else if (process.env.ANTHROPIC_API_KEY) {
-      pedido = await interpretarComClaude(texto, ufAtual);
+      pedido = await interpretarComClaude(texto, ufAtual, anterior);
       motor = "claude";
     } else {
       pedido = await interpretarLocal(texto, ufAtual);
@@ -68,26 +68,71 @@ export async function POST(req: Request) {
     throw e;
   }
 
-  return Response.json({ ...(await resolver(pedido, ufAtual)), motor });
+  return Response.json({ ...(await refinar(await resolver(pedido, ufAtual), anterior)), motor });
 }
 
 class RecusaError extends Error {}
 
-async function interpretarComOpenAI(texto: string, uf: string): Promise<TPedido> {
+const tituloCidade = (n: string) =>
+  n.toLowerCase().split(" ").map((p) => (["de", "do", "da", "dos", "das"].includes(p) ? p : p.charAt(0).toUpperCase() + p.slice(1))).join(" ");
+
+type Resolvido = Awaited<ReturnType<typeof resolver>>;
+const CHAVES_FILTRO = ["uf", "municipio", "cnae", "porte", "abertura_de", "abertura_ate", "com_telefone", "com_email", "simples", "mei", "matriz", "capital_min", "bairro", "q"];
+
+/**
+ * Conversa: a nova mensagem refina a busca que já está na tela.
+ * O segmento (CNAE) é o mais importante: se a mensagem não citar um novo tipo de empresa, o anterior continua.
+ * O mesmo vale para a região e os demais filtros não mencionados.
+ */
+async function refinar(r: Resolvido, anterior?: Record<string, string>): Promise<Resolvido & { mantidos: string[] }> {
+  const ant = Object.fromEntries(Object.entries(anterior ?? {}).filter(([k, v]) => CHAVES_FILTRO.includes(k) && v));
+  if (!Object.keys(ant).length) return { ...r, mantidos: [] };
+  const f = { ...r.filtros };
+  const mantidos: string[] = [];
+  let segmentos = r.entendido.segmentos;
+
+  if (!f.cnae && ant.cnae) {
+    f.cnae = ant.cnae;
+    segmentos = await api<Cnae[]>("cnaes", { codigos: ant.cnae }).catch(() => []);
+    mantidos.push("segmento");
+  }
+  const novaRegiao = !!f.municipio || (r.entendido.uf !== "PR" && !!f.uf) || r.entendido.naoEncontradas.length > 0;
+  if (!novaRegiao) {
+    if (ant.uf && !f.uf) f.uf = ant.uf;
+    if (ant.municipio) { f.municipio = ant.municipio; mantidos.push("região"); }
+  }
+  for (const k of CHAVES_FILTRO) if (!(k in f) && ant[k] && !["uf", "municipio", "cnae"].includes(k)) f[k] = ant[k];
+
+  let resposta = r.resposta;
+  if (mantidos.includes("segmento")) {
+    const seg = segmentos.slice(0, 2).map((c) => c.descricao.split(/[,(]/)[0].trim().toLowerCase()).join(" e ");
+    const onde = r.entendido.cidades.length ? ` em ${r.entendido.cidades.map(tituloCidade).join(", ")}` : mantidos.includes("região") ? " na mesma região" : "";
+    resposta = `Mantive o segmento da busca anterior (${seg}${segmentos.length > 2 ? "…" : ""}) e refinei${onde}.`;
+  }
+  return { ...r, filtros: f, resposta, entendido: { ...r.entendido, segmentos }, mantidos };
+}
+
+/** Contexto da conversa para a IA: a busca que já está na tela */
+const contexto = (anterior?: Record<string, string>) =>
+  anterior && Object.keys(anterior).length
+    ? `\nBusca atual na tela (o pedido pode estar refinando ela): ${JSON.stringify(anterior)}. Se o pedido não citar um novo tipo de empresa, devolva cnaes = [] (o sistema mantém os atuais).`
+    : "";
+
+async function interpretarComOpenAI(texto: string, uf: string, anterior?: Record<string, string>): Promise<TPedido> {
   const client = new OpenAI();
   const hoje = new Date().toISOString().slice(0, 10);
   const resposta = await client.responses.parse({
     model: process.env.OPENAI_MODEL || "gpt-5.4-mini",
     reasoning: { effort: "low" },
     instructions: SISTEMA,
-    input: `Hoje é ${hoje}. UF selecionada na tela: ${uf}.\n\nPedido: ${texto}`,
+    input: `Hoje é ${hoje}. UF selecionada na tela: ${uf}.${contexto(anterior)}\n\nPedido: ${texto}`,
     text: { format: zodTextFormat(Pedido, "filtros_prospeccao") },
   });
   if (!resposta.output_parsed) throw new RecusaError("Não entendi o pedido. Tente algo como “clínicas odontológicas em Londrina com telefone”.");
   return resposta.output_parsed;
 }
 
-async function interpretarComClaude(texto: string, uf: string): Promise<TPedido> {
+async function interpretarComClaude(texto: string, uf: string, anterior?: Record<string, string>): Promise<TPedido> {
   const client = new Anthropic();
   const hoje = new Date().toISOString().slice(0, 10);
   const resposta = await client.beta.messages.parse({
@@ -97,7 +142,7 @@ async function interpretarComClaude(texto: string, uf: string): Promise<TPedido>
     fallbacks: "default",
     system: SISTEMA,
     output_config: { effort: "low", format: betaZodOutputFormat(Pedido) },
-    messages: [{ role: "user", content: `Hoje é ${hoje}. UF selecionada na tela: ${uf}.\n\nPedido: ${texto}` }],
+    messages: [{ role: "user", content: `Hoje é ${hoje}. UF selecionada na tela: ${uf}.${contexto(anterior)}\n\nPedido: ${texto}` }],
   });
   if (resposta.stop_reason === "refusal") throw new RecusaError("Não consegui interpretar esse pedido. Tente descrever o tipo de empresa e a região.");
   if (!resposta.parsed_output) throw new RecusaError("Não entendi o pedido. Tente algo como “clínicas odontológicas em Londrina com telefone”.");
@@ -212,9 +257,31 @@ const SEGMENTOS: { padrao: RegExp; rotulo: string; cnaes: string[] }[] = [
   { padrao: /\badvoga|\bjuridic/, rotulo: "escritórios de advocacia", cnaes: ["6911701"] },
   { padrao: /\bconstrutora|\bconstrucao civil/, rotulo: "construtoras", cnaes: ["4120400"] },
   { padrao: /\bmateria(l|is) de construcao|\bhome ?center/, rotulo: "lojas de material de construção", cnaes: ["4744099", "4744001"] },
-  { padrao: /\bimobiliaria/, rotulo: "imobiliárias", cnaes: ["6821801"] },
+  { padrao: /\bimobiliaria|\bcorretor(a|es)? de imove|\bcorretagem/, rotulo: "imobiliárias e corretores", cnaes: ["6821801", "6821802", "6822600"] },
+  { padrao: /\bloteadora|\bincorporadora|\bincorporacao/, rotulo: "incorporadoras e loteadoras", cnaes: ["4110700", "6810201"] },
+  { padrao: /\bcondominio|\badministradora de condominio/, rotulo: "condomínios e administradoras", cnaes: ["8112500", "6822600"] },
+  { padrao: /\bautoescola|\bauto escola|\bcentros? de formacao de condutores/, rotulo: "autoescolas", cnaes: ["8599603"] },
+  { padrao: /\bconcessionaria|\brevenda de (carros|veiculos)|\bloja de (carros|veiculos)/, rotulo: "lojas e concessionárias de veículos", cnaes: ["4511101", "4511102"] },
+  { padrao: /\bmoveis\b|\bmoveleir|\bmarcenaria/, rotulo: "lojas e fábricas de móveis", cnaes: ["4754701", "3101200", "3102100"] },
+  { padrao: /\botica/, rotulo: "óticas", cnaes: ["4774100"] },
+  { padrao: /\bpsicolog/, rotulo: "psicólogos", cnaes: ["8650003"] },
+  { padrao: /\bfisioterap/, rotulo: "fisioterapia", cnaes: ["8650004"] },
+  { padrao: /\bnutricionist/, rotulo: "nutricionistas", cnaes: ["8650002"] },
+  { padrao: /\blaboratorio/, rotulo: "laboratórios clínicos", cnaes: ["8640202"] },
+  { padrao: /\bcreche|\beducacao infantil/, rotulo: "creches e educação infantil", cnaes: ["8511200", "8512100"] },
+  { padrao: /\bcursos? de idioma|\bescolas? de (ingles|idiomas)/, rotulo: "escolas de idiomas", cnaes: ["8593700"] },
+  { padrao: /\bgrafica/, rotulo: "gráficas", cnaes: ["1813001", "1813099"] },
+  { padrao: /\blavanderia/, rotulo: "lavanderias", cnaes: ["9601701"] },
+  { padrao: /\bfloricultura/, rotulo: "floriculturas", cnaes: ["4789002"] },
+  { padrao: /\blojas? de celular|\bassistencia tecnica/, rotulo: "lojas de celular e assistência técnica", cnaes: ["4752100", "9512600"] },
+  { padrao: /\bjoalheria|\brelojoaria/, rotulo: "joalherias e relojoarias", cnaes: ["4783101", "4783102"] },
+  { padrao: /\bcalcado|\bsapataria/, rotulo: "lojas de calçados", cnaes: ["4782201"] },
+  { padrao: /\bdistribuidora de bebida|\bbebidas\b/, rotulo: "distribuidoras de bebidas", cnaes: ["4635402", "4635499", "4723700"] },
+  { padrao: /\bsorveteria|\bacaiteria|\bacai\b/, rotulo: "sorveterias e açaí", cnaes: ["5611205", "1053800"] },
+  { padrao: /\bcafeteria|\bcafe\b/, rotulo: "cafeterias", cnaes: ["5611203", "5611201"] },
+  { padrao: /\bigreja|\borganizacoes? religios/, rotulo: "igrejas", cnaes: ["9491000"] },
+  { padrao: /\bhotel|\bpousada/, rotulo: "hotéis e pousadas", cnaes: ["5510801", "5590699"] },
   { padrao: /\bescola|\bcolegio/, rotulo: "escolas", cnaes: ["8513900", "8520100", "8512100"] },
-  { padrao: /\bhote(l|is)\b/, rotulo: "hotéis", cnaes: ["5510801"] },
   { padrao: /\btransportadora|\btransporte de carga/, rotulo: "transportadoras", cnaes: ["4930202", "4930201"] },
   { padrao: /\bloja(s)? de roupa|\bvestuario|\bboutique/, rotulo: "lojas de roupa", cnaes: ["4781400"] },
   { padrao: /\bpostos? de combustivel|\bpostos? de gasolina/, rotulo: "postos de combustível", cnaes: ["4731800"] },
