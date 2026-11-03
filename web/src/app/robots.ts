@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/app", "/crm", "/entrar", "/checkout", "/api/", "/auth/"] },
+    rules: { userAgent: "*", allow: "/", disallow: ["/app", "/crm", "/entrar", "/checkout", "/admin", "/api/", "/auth/"] },
     sitemap: "https://www.b2bradar.pro/sitemap.xml",
   };
 }

@@ -20,6 +20,7 @@ export async function GET() {
   const c = sessao.claims;
   const conta = data as Situacao;
   after(async () => {
+    await supabase.rpc("registrar_acesso"); // gráfico de acessos do painel /admin
     const email = c.email as string | undefined;
     const nome = (c.user_metadata as { nome?: string } | undefined)?.nome;
     const enviarUmaVez = async (tipo: "boas_vindas" | "creditos_acabando" | "gratis_esgotado") => {
