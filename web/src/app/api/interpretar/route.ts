@@ -33,8 +33,13 @@ type TPedido = z.infer<typeof Pedido>;
 
 const SISTEMA = `Você converte pedidos de prospecção B2B em filtros de busca sobre a base de CNPJ da Receita Federal (empresas ativas no Brasil).
 
+O usuário é um vendedor B2B procurando CLIENTES. O CNAE é o filtro mais importante: quase sempre preencha "cnaes".
+
 Regras:
 - "cnaes": escolha as subclasses CNAE 2.3 que melhor representam o tipo de empresa pedido, incluindo variações próximas (ex.: padaria → 1091102 e 4721102; dentista → 8630504). No máximo 8 códigos.
+- Intenção de venda ("vender X para…", "quem compra X", "clientes para X", "empresas que precisam de X"): os CNAEs são os dos COMPRADORES de X, nunca de quem fabrica ou vende X. Ex.: "quem compra embalagens plásticas" → indústrias de alimentos, bebidas, cosméticos, limpeza e distribuidores que embalam produtos; "vender ração" → pet shops, agropecuárias, criadores; "vender software de gestão" → comércio varejista e serviços de pequeno porte.
+- Necessidade ampla ("negócios que precisam de site/marketing/contabilidade"): escolha os 6 a 8 segmentos locais que mais compram isso (ex.: site/marketing → restaurantes, salões de beleza, clínicas odontológicas e médicas, academias, imobiliárias, lojas de roupa, oficinas). Não deixe "cnaes" vazio.
+- Só deixe "cnaes" vazio se o pedido não indicar nenhum tipo de cliente (ex.: só cidade ou só um filtro como "com WhatsApp").
 - "termos_segmento": 1 a 3 palavras do vocabulário oficial da CNAE (ex.: "odontológica" para dentista, "restaurantes" para restaurante).
 - Datas relativas ("abertas no último ano", "novas", "recentes") viram abertura_de calculada a partir da data de hoje informada. "Novas" sem prazo = últimos 12 meses.
 - "WhatsApp", "telefone", "dá pra ligar" → com_telefone = true. "E-mail" → com_email = true.
