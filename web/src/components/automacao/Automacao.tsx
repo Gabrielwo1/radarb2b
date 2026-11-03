@@ -8,16 +8,13 @@ import { useEffect, useRef, useState } from "react";
 import { TopNav } from "../TopNav";
 import { IconeWhatsApp, Toasts, avisar, cx } from "../ui";
 import { Celular } from "./Celular";
+import { linkEquipe } from "@/lib/contato";
 
 // Contato da equipe para ativação (WhatsApp tem prioridade; e-mail como alternativa)
-const WHATSAPP_EQUIPE = process.env.NEXT_PUBLIC_WHATSAPP_EQUIPE?.replace(/\D/g, "");
-const EMAIL_EQUIPE = process.env.NEXT_PUBLIC_EMAIL_EQUIPE;
 const MENSAGEM = "Olá! Quero ativar a Automação com IA do Radar B2B para prospecção ativa da minha lista.";
 
 function falarComEquipe() {
-  if (WHATSAPP_EQUIPE) window.open(`https://wa.me/${WHATSAPP_EQUIPE}?text=${encodeURIComponent(MENSAGEM)}`, "_blank", "noopener");
-  else if (EMAIL_EQUIPE) window.location.href = `mailto:${EMAIL_EQUIPE}?subject=${encodeURIComponent("Ativar Automação com IA")}&body=${encodeURIComponent(MENSAGEM)}`;
-  else avisar("Contato da equipe ainda não configurado (NEXT_PUBLIC_WHATSAPP_EQUIPE)");
+  window.open(linkEquipe(MENSAGEM), "_blank", "noopener");
 }
 
 function BotaoEquipe({ grande }: { grande?: boolean }) {

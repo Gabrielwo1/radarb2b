@@ -3,14 +3,13 @@
 import { ArrowRight, Check, Crown, Gauge, Lock, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { linkEquipe } from "@/lib/contato";
 import { fecharPlanos, useBloqueio, useConta } from "@/lib/conta";
 import { ANUAL_SEM_DESCONTO, LIMITES_GRATIS, type Motivo, PAGINAS_AVULSO, PRECOS } from "@/lib/planos";
 import { IconeWhatsApp, cx } from "../ui";
 
-const WHATSAPP_EQUIPE = process.env.NEXT_PUBLIC_WHATSAPP_EQUIPE?.replace(/\D/g, "");
 export function falarComEquipe(texto = "Olá! Quero conhecer o plano Empresa do Radar B2B (tudo liberado + automação de WhatsApp).") {
-  if (WHATSAPP_EQUIPE) window.open(`https://wa.me/${WHATSAPP_EQUIPE}?text=${encodeURIComponent(texto)}`, "_blank", "noopener");
-  else window.location.href = "/automacao";
+  window.open(linkEquipe(texto), "_blank", "noopener");
 }
 
 export const reais = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });

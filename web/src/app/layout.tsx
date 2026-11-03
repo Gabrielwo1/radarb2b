@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
+import { WhatsAppFlutuante } from "@/components/WhatsAppFlutuante";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" className={`${outfit.variable} antialiased`}>
       <body className="font-sans">
         {children}
+        <WhatsAppFlutuante />
       </body>
     </html>
   );
