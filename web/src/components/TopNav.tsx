@@ -1,10 +1,11 @@
 "use client";
 
-import { Bell, KanbanSquare, LogOut, Radar, Search, Settings, Sparkles } from "lucide-react";
+import { Bell, Crown, KanbanSquare, LogOut, Radar, Search, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { abrirAcesso, sair, useSessao } from "@/lib/sessao";
 import Link from "next/link";
 import { useCrm } from "@/lib/crm";
+import { useConta } from "@/lib/conta";
 import { Popover, cx } from "./ui";
 
 const PAGINAS = [
@@ -13,7 +14,7 @@ const PAGINAS = [
   { id: "automacao", rotulo: "Automação IA", href: "/automacao", icone: Sparkles },
 ] as const;
 
-export function TopNav({ pagina }: { pagina: (typeof PAGINAS)[number]["id"] }) {
+export function TopNav({ pagina }: { pagina: (typeof PAGINAS)[number]["id"] | "planos" }) {
   const { leads } = useCrm();
   const abertos = leads.filter((l) => l.etapa !== "ganho" && l.etapa !== "perdido").length;
 
@@ -60,15 +61,19 @@ export function TopNav({ pagina }: { pagina: (typeof PAGINAS)[number]["id"] }) {
 
 function BotoesConta() {
   const { usuario } = useSessao();
+  const { conta, temPlano } = useConta();
   if (!usuario) return null;
   return (
     <>
         <button type="button" aria-label="Notificações" className="grid size-11 place-items-center rounded-full border border-white/90 bg-white/70">
           <Bell className="size-4" />
         </button>
-        <button type="button" aria-label="Configurações" className="grid size-11 place-items-center rounded-full border border-white/90 bg-white/70">
-          <Settings className="size-4" />
-        </button>
+        <Link href="/planos" title="Planos e créditos"
+          className={cx("flex h-11 items-center gap-2 rounded-full px-4 text-sm transition",
+            temPlano ? "bg-ink text-lime" : "border border-white/90 bg-white/70 hover:bg-white")}>
+          <Crown className="size-4" />
+          {temPlano ? (conta?.plano === "empresa" ? "Empresa" : "Pro") : "Planos"}
+        </Link>
     </>
   );
 }

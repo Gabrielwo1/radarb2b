@@ -10,8 +10,10 @@ import { tituloCidade } from "./Filtros";
 import { IconeWhatsApp, cx } from "./ui";
 
 /** Painel lateral compacto: o foco é a tabela; aqui ficam as ações de contato. */
-export function Detalhe({ cnpj, salvo, onSalvar, onFechar, etapaCrm, onCrm, onWhatsApp }: {
+export function Detalhe({ cnpj, consulta, salvo, onSalvar, onFechar, etapaCrm, onCrm, onWhatsApp }: {
   cnpj: string;
+  /** Pesquisa avulsa liberada: abrir empresas dela não gasta contato grátis */
+  consulta?: string | null;
   salvo: boolean;
   onSalvar: (e: EmpresaDetalhe) => void;
   onFechar: () => void;
@@ -19,7 +21,7 @@ export function Detalhe({ cnpj, salvo, onSalvar, onFechar, etapaCrm, onCrm, onWh
   onCrm: () => void;
   onWhatsApp: (e: EmpresaDetalhe) => void;
 }) {
-  const { dados: e } = useApi<EmpresaDetalhe>(urlApi(`empresas/${cnpj}`));
+  const { dados: e } = useApi<EmpresaDetalhe>(urlApi(`empresas/${cnpj}`, consulta ? new URLSearchParams({ consulta }) : undefined));
   const [copiado, setCopiado] = useState(false);
 
   useEffect(() => {

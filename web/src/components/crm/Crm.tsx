@@ -1,9 +1,10 @@
 "use client";
 
-import { AlarmClock, CalendarClock, KanbanSquare, Plus, Search, Trophy, X } from "lucide-react";
+import { AlarmClock, ArrowRight, CalendarClock, KanbanSquare, Lock, Plus, Search, Trophy, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { abrirAcesso, useSessao } from "@/lib/sessao";
+import { useConta } from "@/lib/conta";
 import { ETAPAS, type EtapaId, type Lead, atualizarLead, recarregarCrm, useCrm } from "@/lib/crm";
 import { ehCelular, escala, linkWhatsApp, iniciais, moeda, nomeProprio, porcentagem, tom } from "@/lib/formato";
 import { tituloCidade } from "../Filtros";
@@ -18,6 +19,7 @@ const ABERTAS: EtapaId[] = ["novo", "contato", "qualificado", "proposta", "negoc
 export function Crm() {
   const { leads, carregado } = useCrm();
   const sessao = useSessao();
+  const { conta, temPlano } = useConta();
   // Visitante: o funil é da conta, então abre o pop-up de acesso direto
   useEffect(() => {
     if (sessao.carregado && !sessao.usuario) abrirAcesso("criar", "Crie sua conta grátis para organizar seus leads no CRM");
@@ -87,6 +89,7 @@ export function Crm() {
     <main className="mx-auto flex max-w-[1600px] flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8">
       <TopNav pagina="crm" />
       <Toasts />
+      {sessao.usuario && conta && !temPlano && <CrmBloqueado leads={leads.length} />}
 
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -300,4 +303,25 @@ function tempoRelativo(iso: string) {
   if (h < 24) return `há ${h} h`;
   const d = Math.round(h / 24);
   return d === 1 ? "ontem" : `há ${d} dias`;
+}
+
+/** Sem plano: o CRM fica só para leitura, com o convite para o Pro. */
+function CrmBloqueado({ leads }: { leads: number }) {
+  return (
+    <div className="relative flex flex-wrap items-center justify-between gap-5 overflow-hidden rounded-[var(--radius-panel)] bg-coal p-6 text-white sm:p-8">
+      <span className="pointer-events-none absolute -right-16 -top-16 size-60 rounded-full bg-lime/20 blur-[70px]" />
+      <div className="relative flex items-center gap-4">
+        <span className="grid size-12 shrink-0 place-items-center rounded-full bg-lime text-ink"><Lock className="size-5" /></span>
+        <div>
+          <p className="text-xl tracking-tight">O CRM faz parte do plano Pro</p>
+          <p className="text-sm text-white/60">
+            {leads ? `Seus ${leads} leads continuam salvos. Assine para mover, editar e adicionar novos.` : "Monte seu funil, mova leads no kanban e acompanhe cada negociação."}
+          </p>
+        </div>
+      </div>
+      <Link href="/planos" className="relative flex h-12 items-center gap-3 rounded-full bg-lime pl-5 pr-1.5 text-sm font-medium text-ink hover:bg-lime-deep">
+        Ver planos <span className="grid size-9 place-items-center rounded-full bg-ink text-lime"><ArrowRight className="size-4" /></span>
+      </Link>
+    </div>
+  );
 }

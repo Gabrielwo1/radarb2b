@@ -249,6 +249,8 @@ function Linha({ e, ativo, marcado, salvo, onClick, onMarcar, onSalvar, etapaCrm
   const nome = nomeProprio(e.nome_fantasia || e.razao_social);
   // Prévia de visitante: dados já vêm mascarados do servidor
   const oculto = e.cnpj.startsWith("oculto-");
+  // Conta grátis: contato só aparece depois de aberto (clicar na linha gasta 1 dos 10 contatos)
+  const mascarado = oculto || !!e.contato_bloqueado;
   const regime = e.mei ? "MEI" : e.simples ? "Simples" : "Normal";
   const fundo = ativo ? "bg-steel" : "bg-coal-2 group-hover:bg-coal-3";
   const sub = ativo ? "text-white/80" : "text-white/45";
@@ -287,12 +289,13 @@ function Linha({ e, ativo, marcado, salvo, onClick, onMarcar, onSalvar, etapaCrm
       <td className={cx(td, "whitespace-nowrap tabular-nums")}>
         {e.telefone1 ? (
           <div className="flex items-center gap-1.5">
-            {oculto ? foneMascarado(e.telefone1) : telefone(e.telefone1)}
-            {(oculto ? e.telefone1[2] === "9" : ehCelular(e.telefone1)) && (
+            {mascarado ? foneMascarado(e.telefone1) : telefone(e.telefone1)}
+            {e.contato_bloqueado && <Lock className="size-3 text-white/40" aria-label="Clique na empresa para ver o contato" />}
+            {(mascarado ? e.telefone1[2] === "9" : ehCelular(e.telefone1)) && (
               <button
                 type="button"
                 onClick={(ev) => { ev.stopPropagation(); onWhatsApp(); }}
-                title="Chamar no WhatsApp (entra no CRM em “Em contato”)"
+                title={e.contato_bloqueado ? "Chamar no WhatsApp (usa 1 contato grátis)" : "Chamar no WhatsApp"}
                 aria-label="Chamar no WhatsApp"
                 className="grid size-7 place-items-center rounded-full bg-white/10 transition hover:scale-110 hover:bg-white/20"
               >

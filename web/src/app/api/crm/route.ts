@@ -9,6 +9,8 @@ export async function POST(req: Request) {
   const supabase = await supabaseServidor();
   const { data: sessao } = await supabase.auth.getClaims();
   if (!sessao?.claims) return Response.json({ erro: "Faça login para usar o CRM" }, { status: 401 });
+  const { data: plano } = await supabase.rpc("tem_plano", { uid: sessao.claims.sub });
+  if (!plano) return Response.json({ erro: "O CRM faz parte do plano Pro", motivo: "crm" }, { status: 402 });
 
   const corpo = (await req.json().catch(() => ({}))) as { cnpjs?: string[]; etapa?: string; origem?: string };
   const cnpjs = [...new Set((corpo.cnpjs ?? []).map((c) => String(c).replace(/\D/g, "")).filter((c) => c.length === 14))].slice(0, 500);

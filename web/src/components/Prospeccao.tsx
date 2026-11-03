@@ -10,6 +10,9 @@ import { useBuscasSalvas, useLocal, useSalvos } from "@/lib/local";
 import { exigirLogin, useSessao } from "@/lib/sessao";
 import { limparBusca, registrarBusca, registrarFiltros, ultimaBusca, useUltimaBusca } from "@/lib/ultimaBusca";
 import { adicionarAoCrm, useEtapasCrm } from "@/lib/crm";
+import { abrirPlanos, atualizarConta, tratar402, useConta } from "@/lib/conta";
+import { chaveBusca } from "@/lib/planos";
+import { Creditos } from "./planos/Planos";
 import { ehCelular, escala, linkWhatsApp } from "@/lib/formato";
 import { Assistente } from "./Assistente";
 import { Detalhe } from "./Detalhe";
@@ -120,7 +123,12 @@ export function Prospeccao() {
   const fecharDetalhe = useCallback(() => setSelecionado(null), []);
   // CRM: adicionar em massa/individual e WhatsApp (abre a conversa e move para "Em contato")
   const etapasCrm = useEtapasCrm();
-  const enviarAoCrm = (cnpjs: string[]) => exigirLogin(() => adicionar(cnpjs), "Crie sua conta para montar seu funil de vendas");
+  // Plano: CRM é do Pro; contatos e exportação gastam crédito no grátis (o servidor confere tudo)
+  const { temPlano, avulsa } = useConta();
+  const chaveAtual = chaveBusca(apiQ);
+  const consultaAvulsa = avulsa(chaveAtual) ? chaveAtual : null;
+  const enviarAoCrm = (cnpjs: string[]) =>
+    exigirLogin(() => (temPlano ? adicionar(cnpjs) : abrirPlanos("crm")), "Crie sua conta para montar seu funil de vendas");
   const adicionar = async (cnpjs: string[]) => {
     try {
       const n = await adicionarAoCrm(cnpjs, { origem: "prospeccao" });
@@ -131,10 +139,24 @@ export function Prospeccao() {
   };
   const chamarWhatsApp = (e: { cnpj: string; telefone1: string | null; telefone2?: string | null }) =>
     exigirLogin(() => abrirWhatsApp(e), "Crie sua conta para chamar no WhatsApp");
-  const abrirWhatsApp = (e: { cnpj: string; telefone1: string | null; telefone2?: string | null }) => {
+  const abrirWhatsApp = async (e: { cnpj: string; telefone1: string | null; telefone2?: string | null; contato_bloqueado?: boolean }) => {
+    // Sem plano: o WhatsApp abre direto (sem CRM); se o contato está mascarado, abrir gasta 1 contato grátis
+    if (e.contato_bloqueado) {
+      const janela = window.open("about:blank", "_blank"); // abre já no clique (evita bloqueio de pop-up)
+      const q = consultaAvulsa ? `?${new URLSearchParams({ consulta: consultaAvulsa })}` : "";
+      const r = await fetch(urlApi(`empresas/${e.cnpj}`) + q);
+      if (await tratar402(r)) return janela?.close();
+      const d = r.ok ? await r.json() : null;
+      atualizarConta();
+      const celular = [d?.telefone1, d?.telefone2].find(ehCelular);
+      if (!celular || !janela) return janela?.close();
+      janela.location.href = linkWhatsApp(celular);
+      return;
+    }
     const celular = [e.telefone1, e.telefone2].find(ehCelular);
     if (!celular) return;
     window.open(linkWhatsApp(celular), "_blank", "noopener");
+    if (!temPlano) return;
     adicionarAoCrm([e.cnpj], { etapa: "contato", origem: "whatsapp" })
       .then(() => avisar("Conversa aberta · lead em “Em contato” no CRM", { rotulo: "Ver CRM", href: "/crm" }))
       .catch(() => {});
@@ -142,7 +164,10 @@ export function Prospeccao() {
 
   const salvar = (e: Empresa) =>
     exigirLogin(() => alternar({ cnpj: e.cnpj, nome: e.nome_fantasia || e.razao_social || e.cnpj, municipio: e.municipio }), "Crie sua conta para salvar empresas");
-  const exportar = () => exigirLogin(() => { window.location.href = urlExportar; }, "Crie sua conta para exportar a lista");
+  const exportar = () => exigirLogin(() => {
+    if (!temPlano && !consultaAvulsa) return abrirPlanos("exportar", chaveAtual);
+    window.location.href = urlExportar;
+  }, "Crie sua conta para exportar a lista");
 
   const exportarQ = new URLSearchParams(apiQ);
   const urlExportar = urlApi("exportar", exportarQ);
@@ -153,6 +178,7 @@ export function Prospeccao() {
     <main className="mx-auto flex max-w-[1440px] flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8">
       <TopNav pagina="prospeccao" />
       <Toasts />
+      {logado && <Creditos chave={chaveAtual} />}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-xs text-ink/60">
@@ -231,6 +257,7 @@ export function Prospeccao() {
         {selecionado && (
           <Detalhe
             cnpj={selecionado}
+            consulta={consultaAvulsa}
             salvo={ehSalvo(selecionado)}
             onSalvar={salvar}
             onFechar={fecharDetalhe}

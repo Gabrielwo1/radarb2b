@@ -32,7 +32,7 @@ export function ModalAcesso() {
           <span className="relative grid size-10 place-items-center rounded-full bg-lime text-ink"><Radar className="size-5" /></span>
           <h2 className="relative mt-auto text-3xl leading-tight tracking-tight">Falta pouco para ver <span className="text-lime">todas as empresas</span>.</h2>
           <ul className="relative mt-5 flex flex-col gap-2.5 text-sm text-white/75">
-            {["Telefone, e-mail e endereço completos", "Filtros, mapa e busca por linguagem natural", "CRM kanban e WhatsApp em 1 clique", "Conta grátis, sem cartão"].map((t) => (
+            {["Telefone, e-mail e endereço completos", "Filtros, mapa e busca por linguagem natural", "CRM kanban e WhatsApp em 1 clique", "Comece grátis, sem cartão"].map((t) => (
               <li key={t} className="flex items-center gap-2.5"><span className="grid size-5 place-items-center rounded-full bg-lime text-ink"><Check className="size-3" /></span>{t}</li>
             ))}
           </ul>

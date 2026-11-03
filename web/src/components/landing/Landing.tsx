@@ -118,7 +118,7 @@ function Nav() {
           <span className="text-lg font-semibold tracking-tight">radar<span className="text-muted">b2b</span></span>
         </Link>
         <div className="mx-auto hidden items-center gap-1 rounded-full bg-ink p-1 md:flex">
-          {[["#estados", "Dados"], ["#recursos", "Recursos"], ["#como-funciona", "Como funciona"], ["#ia", "Automação IA"], ["#faq", "Dúvidas"]].map(([h, r]) => (
+          {[["#estados", "Dados"], ["#recursos", "Recursos"], ["#como-funciona", "Como funciona"], ["#ia", "Automação IA"], ["/planos", "Planos"], ["#faq", "Dúvidas"]].map(([h, r]) => (
             <a key={h} href={h} className="rounded-full px-4 py-2 text-sm text-white/75 transition hover:bg-white/10 hover:text-white">{r}</a>
           ))}
         </div>
@@ -515,7 +515,8 @@ function SecaoIA() {
 const PERGUNTAS = [
   ["De onde vêm os dados?", "Dos dados abertos do CNPJ publicados pela Receita Federal: razão social, nome fantasia, CNAE, endereço, telefones, e-mail, porte, regime e data de abertura de todas as empresas ativas do país."],
   ["Com que frequência a base é atualizada?", "Todo mês. Assim que a Receita publica a nova base, ela é processada e substitui a anterior sem interromper o uso."],
-  ["Posso exportar as empresas?", "Sim. Qualquer busca pode ser exportada em CSV (abre direto no Excel), com até 20 mil empresas por exportação."],
+  ["Quanto custa?", "Você começa grátis com 5 pesquisas e 10 contatos. Para uma pesquisa pontual, libere só ela por R$ 10 (Pix ou cartão). O Pro custa R$ 99/mês, ou 12x de R$ 59,40 no anual (40% off), com pesquisas, contatos e CRM ilimitados."],
+  ["Posso exportar as empresas?", "Sim. No Pro qualquer busca pode ser exportada em CSV (abre direto no Excel), com até 20 mil empresas. Na consulta avulsa de R$ 10, a pesquisa liberada é exportada com até 600 empresas."],
   ["Como fica a LGPD?", "Os dados são públicos e de pessoas jurídicas. Para MEIs, que podem trazer dados do titular, recomendamos abordagem com identificação clara e opção de não ser mais contatado, que é o padrão na automação com IA."],
   ["Preciso instalar alguma coisa?", "Não. Funciona no navegador, no computador e no celular."],
 ];

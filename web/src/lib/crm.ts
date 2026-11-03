@@ -1,5 +1,6 @@
 "use client";
 
+import { tratar402 } from "./conta";
 import { useEffect, useSyncExternalStore } from "react";
 import { useSessao } from "./sessao";
 import { supabaseNavegador } from "./supabase/client";
@@ -83,6 +84,7 @@ export async function adicionarAoCrm(cnpjs: string[], opcoes: { etapa?: EtapaId;
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ cnpjs, etapa: opcoes.etapa, origem: opcoes.origem }),
   });
+  if (await tratar402(r)) throw new Error("O CRM faz parte do plano Pro");
   const corpo = await r.json().catch(() => null);
   if (!r.ok) throw new Error(corpo?.erro ?? `Erro ${r.status}`);
   await recarregarCrm();

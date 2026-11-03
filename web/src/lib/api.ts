@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { atualizarConta, tratar402 } from "./conta";
 import { useSessao } from "./sessao";
 
 export type Empresa = {
   cnpj: string;
+  /** Conta grátis: telefone/e-mail mascarados até o contato ser aberto */
+  contato_bloqueado?: boolean;
   razao_social: string | null;
   nome_fantasia: string | null;
   situacao: number;
@@ -76,7 +79,9 @@ export function useApi<T>(url: string | null) {
     setErro(null);
     fetch(url, { signal: ctrl.signal })
       .then(async (r) => {
+        if (await tratar402(r)) throw new Error((await r.json().catch(() => null))?.erro ?? "Sem créditos");
         if (!r.ok) throw new Error((await r.json().catch(() => null))?.erro ?? `Erro ${r.status}`);
+        if (/\/api\/b2b\/(empresas|exportar)/.test(url)) atualizarConta(); // consumo de crédito mudou
         return r.json() as Promise<T>;
       })
       .then((d) => {
