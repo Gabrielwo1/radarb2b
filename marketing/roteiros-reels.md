@@ -33,7 +33,7 @@ Pronúncia: escrever "bi-tu-bi" para B2B e "I A" para IA na narração.
 | 8–15s | Virada: "ping", varredura de radar acende o Brasil em lime, pin 3D, contador até 28.263.114 | Acende o radar. / 28.263.114 empresas ativas da Receita Federal | "Agora, acende o radar. Vinte e oito milhões de empresas ativas da Receita Federal, no mapa." |
 | 15–21s | Painel do app: "quem compra embalagens no PR?", etiquetas (Frigoríficos, Laticínios, Cosméticos), cartões de empresas com WhatsApp | Você pergunta. A IA acha. / Por cidade · Por segmento | "Escreve o que você vende, e a I A encontra quem compra. Por cidade e por segmento." |
 | 21–25s | Logo do WhatsApp (branco no verde) com toque, lead desliza para "Em contato" no kanban | WhatsApp em 1 clique. / e o lead já entra no seu funil | "WhatsApp em um clique, e o lead já entra no seu funil." |
-| 25–31s | Logo com radar girando, botão lime | radarb2b / Pare de vender no escuro. / Teste grátis → b2bradar.pro | "Radar bi-tu-bi. Pare de vender no escuro. Teste grátis." |
+| 24–30s | Logo com radar girando, botão lime | radarb2b / Pare de vender no escuro. / Teste grátis → b2bradar.pro | "Radar Empresas. Pare de vender no escuro. Teste grátis." |
 
 Efeitos: digitação, impacto grave, glitch, sonar, varredura, pops, notificação, swoosh, assinatura da marca.
 

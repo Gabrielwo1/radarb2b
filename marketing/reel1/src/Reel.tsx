@@ -9,7 +9,7 @@ import { MapaRadar } from "./MapaRadar";
 // ícones 3D e efeitos do Freepik, sincronizado com a narração (29,4 s, ElevenLabs v3).
 
 export const FPS = 30;
-export const DURACAO = 31 * FPS;
+export const DURACAO = 30 * FPS;
 const { fontFamily } = loadFont("normal", { weights: ["400", "500", "600"] });
 
 export const COR = { carvao: "#141518", carvao2: "#1d1f24", lime: "#E3FC3F", gelo: "#EEF2F8", texto: "#2A2B2E", cinza: "#8A8F98", steel: "#3D4A5C" };
@@ -18,7 +18,7 @@ const s = (seg: number) => Math.round(seg * FPS);
 // Momentos da narração (segundos, medidos no áudio)
 const T = {
   pergunta: 0, escuro: 1.85, prospecta: 3.3, ligaPra: 5.3, perde: 6.69, acende: 8.45, milhoes: 10.85, escreve: 15.05,
-  cidade: 18.35, whats: 20.84, marca: 24.7, pare: 27.08, teste: 28.5,
+  cidade: 18.35, whats: 20.84, marca: 24.45, pare: 25.75, teste: 27.11,
 };
 
 export const Reel = () => (
