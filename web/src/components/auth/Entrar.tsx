@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { supabaseNavegador } from "@/lib/supabase/client";
+import { rastrear } from "@/lib/pixel";
 import { cx } from "../ui";
 
 type Modo = "entrar" | "criar" | "recuperar";
@@ -110,6 +111,7 @@ export function FormularioAcesso({ modoInicial = "entrar", erroInicial = null, d
           options: { data: { nome: nome.trim(), telefone: telefone.replace(/\D/g, "") }, emailRedirectTo: callback(destinoConfirmacao) },
         });
         if (error) throw error;
+        rastrear("CompleteRegistration", { content_name: "Conta grátis", status: true });
         if (data.session) onEntrou();
         else setVerificando(true); // confirmação do e-mail dentro do próprio formulário
       } else {

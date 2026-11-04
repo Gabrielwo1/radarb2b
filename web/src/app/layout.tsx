@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
+import { Suspense } from "react";
 import { WhatsAppFlutuante } from "@/components/WhatsAppFlutuante";
+import { MetaPixel } from "@/components/MetaPixel";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -25,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans">
         {children}
         <WhatsAppFlutuante />
+        <Suspense><MetaPixel /></Suspense>
       </body>
     </html>
   );
