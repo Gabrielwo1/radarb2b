@@ -10,10 +10,10 @@ import { MapaRadar } from "./MapaRadar";
 
 export const FPS = 30;
 export const DURACAO = 30 * FPS;
-const { fontFamily } = loadFont("normal", { weights: ["400", "500", "600"] });
+export const { fontFamily } = loadFont("normal", { weights: ["400", "500", "600"] });
 
 export const COR = { carvao: "#141518", carvao2: "#1d1f24", lime: "#E3FC3F", gelo: "#EEF2F8", texto: "#2A2B2E", cinza: "#8A8F98", steel: "#3D4A5C" };
-const s = (seg: number) => Math.round(seg * FPS);
+export const s = (seg: number) => Math.round(seg * FPS);
 
 // Momentos da narração (segundos, medidos no áudio)
 const T = {
@@ -38,7 +38,7 @@ export const Reel = () => (
 // ---------------------------------------------------------------------------
 // Efeitos sonoros (sem música: só narração + SFX)
 
-function Sfx({ em, arquivo, volume = 0.6 }: { em: number; arquivo: string; volume?: number }) {
+export function Sfx({ em, arquivo, volume = 0.6 }: { em: number; arquivo: string; volume?: number }) {
   return <Sequence from={s(em)}><Audio src={staticFile(`audio/${arquivo}.mp3`)} volume={volume} /></Sequence>;
 }
 function Efeitos() {
@@ -65,10 +65,10 @@ function Efeitos() {
 // Utilitários de animação
 
 /** Entrada com mola (função pura: pode ser usada em listas e condições). */
-const ent = (frame: number, atraso = 0, config = { damping: 14, stiffness: 120 }) =>
+export const ent = (frame: number, atraso = 0, config = { damping: 14, stiffness: 120 }) =>
   spring({ frame: frame - s(atraso), fps: FPS, config });
 
-function Titulo({ children, atraso = 0, tamanho = 92, cor = "white", style }: {
+export function Titulo({ children, atraso = 0, tamanho = 92, cor = "white", style }: {
   children: ReactNode; atraso?: number; tamanho?: number; cor?: string; style?: CSSProperties;
 }) {
   const frame = useCurrentFrame();
@@ -81,7 +81,7 @@ function Titulo({ children, atraso = 0, tamanho = 92, cor = "white", style }: {
   );
 }
 
-function Icone3D({ arquivo, tamanho, atraso = 0, style, flutuar = true }: {
+export function Icone3D({ arquivo, tamanho, atraso = 0, style, flutuar = true }: {
   arquivo: string; tamanho: number; atraso?: number; style?: CSSProperties; flutuar?: boolean;
 }) {
   const frame = useCurrentFrame();
@@ -96,7 +96,7 @@ function Icone3D({ arquivo, tamanho, atraso = 0, style, flutuar = true }: {
   );
 }
 
-function Brilho({ x, y, tamanho = 700, opacidade = 0.25 }: { x: string; y: string; tamanho?: number; opacidade?: number }) {
+export function Brilho({ x, y, tamanho = 700, opacidade = 0.25 }: { x: string; y: string; tamanho?: number; opacidade?: number }) {
   return (
     <div style={{
       position: "absolute", left: x, top: y, width: tamanho, height: tamanho, borderRadius: "50%",
@@ -107,7 +107,7 @@ function Brilho({ x, y, tamanho = 700, opacidade = 0.25 }: { x: string; y: strin
 
 /** Logo do WhatsApp: símbolo oficial em branco sobre o círculo verde. */
 const WHATS = "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z";
-function LogoWhats({ tamanho, brilho = false }: { tamanho: number; brilho?: boolean }) {
+export function LogoWhats({ tamanho, brilho = false }: { tamanho: number; brilho?: boolean }) {
   return (
     <div style={{
       width: tamanho, height: tamanho, borderRadius: "50%", background: "#25D366", display: "grid", placeItems: "center", flexShrink: 0,
@@ -343,7 +343,7 @@ function CenaWhats() {
 // ---------------------------------------------------------------------------
 // Cena 6 — marca + chamada
 
-function CenaMarca() {
+export function CenaMarca({ pare = T.pare - T.marca, teste = T.teste - T.marca, frase }: { pare?: number; teste?: number; frase?: ReactNode } = {}) {
   const frame = useCurrentFrame();
   const anel = ent(frame, 0, { damping: 12, stiffness: 90 });
   const giro = frame * 4;
@@ -361,14 +361,14 @@ function CenaMarca() {
         <div style={{ position: "absolute", left: "50%", top: "50%", width: 26, height: 26, borderRadius: 13, background: COR.lime, transform: "translate(-50%,-50%)" }} />
       </div>
       <Titulo atraso={0.2} tamanho={110} style={{ marginTop: 50, fontWeight: 600 }}>radar<span style={{ color: COR.cinza }}>b2b</span></Titulo>
-      <Titulo atraso={T.pare - T.marca} tamanho={74} style={{ marginTop: 60 }}>Pare de vender <span style={{ color: COR.lime }}>no escuro.</span></Titulo>
+      <Titulo atraso={pare} tamanho={74} style={{ marginTop: 60 }}>{frase ?? <>Pare de vender <span style={{ color: COR.lime }}>no escuro.</span></>}</Titulo>
       <div style={{
         marginTop: 70, background: COR.lime, color: COR.carvao, borderRadius: 99, padding: "30px 56px", fontSize: 50, fontWeight: 600,
-        opacity: ent(frame, T.teste - T.marca), transform: `scale(${0.8 + ent(frame, T.teste - T.marca, { damping: 9, stiffness: 160 }) * 0.2})`,
+        opacity: ent(frame, teste), transform: `scale(${0.8 + ent(frame, teste, { damping: 9, stiffness: 160 }) * 0.2})`,
       }}>
         Teste grátis →
       </div>
-      <div style={{ marginTop: 34, fontSize: 44, color: "#C9CDD3", opacity: ent(frame, T.teste - T.marca + 0.3) }}>b2bradar.pro</div>
+      <div style={{ marginTop: 34, fontSize: 44, color: "#C9CDD3", opacity: ent(frame, teste + 0.3) }}>b2bradar.pro</div>
     </AbsoluteFill>
   );
 }

@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "estudio": "remotion studio src/index.ts",
-    "render": "remotion render src/index.ts Reel1 out/reel1-radar.mp4 --codec h264 --crf 18"
+    "render": "remotion render src/index.ts Reel1 out/reel1-radar.mp4 --codec h264 --crf 18",
+    "render2": "remotion render src/index.ts Reel2 out/reel2-fim-do-mes.mp4 --codec h264 --crf 18"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.540",
