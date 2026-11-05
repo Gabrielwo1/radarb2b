@@ -1,4 +1,5 @@
 import { AbsoluteFill, Audio, Easing, Sequence, interpolate, staticFile, useCurrentFrame } from "remotion";
+import { Cena } from "./Fundo";
 import { Brilho, COR, CenaMarca, FPS, Icone3D, LogoWhats, Sfx, Titulo, ent, fontFamily, s } from "./Reel";
 
 // Reel 2 — "Fim do mês". Dor: meta longe e funil vazio. Função: lista pronta + funil. Objetivo: meta batida.
@@ -16,13 +17,13 @@ export const Reel2 = () => (
   <AbsoluteFill style={{ background: COR.carvao, fontFamily, color: "white" }}>
     <Audio src={staticFile("audio/r2-narracao.mp3")} />
     <Efeitos />
-    <Sequence from={0} durationInFrames={s(T.funil)}><CenaCalendario /></Sequence>
-    <Sequence from={s(T.funil)} durationInFrames={s(T.radar - 0.15 - T.funil)}><CenaFunilVazio /></Sequence>
-    <Sequence from={s(T.radar - 0.15)} durationInFrames={s(T.chama - T.radar + 0.15)}><CenaLista /></Sequence>
-    <Sequence from={s(T.chama)} durationInFrames={s(T.fim - T.chama)}><CenaKanban /></Sequence>
-    <Sequence from={s(T.fim)} durationInFrames={s(T.marca - T.fim)}><CenaMeta /></Sequence>
+    <Sequence from={0} durationInFrames={s(T.funil)}><Cena tipo="problema"><CenaCalendario /></Cena></Sequence>
+    <Sequence from={s(T.funil)} durationInFrames={s(T.radar - 0.15 - T.funil)}><Cena tipo="problema"><CenaFunilVazio /></Cena></Sequence>
+    <Sequence from={s(T.radar - 0.15)} durationInFrames={s(T.chama - T.radar + 0.15)}><Cena tipo="solucao"><CenaLista /></Cena></Sequence>
+    <Sequence from={s(T.chama)} durationInFrames={s(T.fim - T.chama)}><Cena tipo="solucao"><CenaKanban /></Cena></Sequence>
+    <Sequence from={s(T.fim)} durationInFrames={s(T.marca - T.fim)}><Cena tipo="solucao"><CenaMeta /></Cena></Sequence>
     <Sequence from={s(T.marca)}>
-      <CenaMarca pare={0.6} teste={T.teste - T.marca} frase={<>Bata a meta <span style={{ color: COR.lime }}>todo mês.</span></>} />
+      <Cena tipo="solucao"><CenaMarca pare={0.6} teste={T.teste - T.marca} frase={<>Bata a meta <span style={{ color: COR.lime }}>todo mês.</span></>} /></Cena>
     </Sequence>
   </AbsoluteFill>
 );
@@ -76,7 +77,7 @@ function CenaCalendario() {
       <div style={{ position: "absolute", top: 760, left: 0, right: 0, textAlign: "center", fontSize: 200, fontWeight: 600, letterSpacing: -6, fontVariantNumeric: "tabular-nums", color: dia === 28 ? "white" : "#6B7079" }}>
         Dia {dia}.
       </div>
-      <div style={{ position: "absolute", top: 1180, transform: `translateX(${tremor}px)`, opacity: ent(frame, T.meta) }}>
+      <div style={{ position: "absolute", top: 1180, left: 90, transform: `translateX(${tremor}px)`, opacity: ent(frame, T.meta) }}>
         <BarraMeta pct={meta} cor="#7A808A" />
       </div>
       <div style={{ position: "absolute", top: 1420, left: 0, right: 0 }}>
@@ -100,7 +101,7 @@ function CenaFunilVazio() {
       <Icone3D arquivo="funil" tamanho={520} style={{ left: 280, top: 520, transform: `rotate(${giro}deg)`, opacity: 0.9 }} flutuar={false} />
       {/* celular sem notificação */}
       <div style={{
-        position: "absolute", top: 1180, width: 520, borderRadius: 40, background: "rgba(255,255,255,0.05)", border: "2px solid rgba(255,255,255,0.08)",
+        position: "absolute", top: 1180, width: 520, borderRadius: 40, background: "rgba(255,255,255,0.05)", border: "2px solid rgba(255,255,255,0.1)", borderTopColor: "rgba(255,255,255,0.22)", backdropFilter: "blur(24px)", boxShadow: "0 30px 80px rgba(0,0,0,0.35)",
         padding: "34px 40px", display: "flex", alignItems: "center", gap: 28, opacity: ent(frame, T.ninguem - T.funil - 0.3),
       }}>
         <span style={{ width: 72, height: 72, borderRadius: 36, background: "rgba(255,255,255,0.08)", display: "grid", placeItems: "center", fontSize: 38 }}>📵</span>
@@ -160,7 +161,7 @@ function CenaLista() {
         return (
           <div key={l.nome} style={{
             position: "absolute", left: 140, right: 140, top: y, transform: `scale(${escala})`, opacity: opac,
-            display: "flex", alignItems: "center", gap: 20, background: COR.carvao2, border: "2px solid rgba(255,255,255,0.08)", borderRadius: 28, padding: "18px 22px",
+            display: "flex", alignItems: "center", gap: 20, background: "rgba(29,31,36,0.82)", backdropFilter: "blur(18px)", border: "2px solid rgba(255,255,255,0.1)", borderTopColor: "rgba(255,255,255,0.2)", borderRadius: 28, padding: "18px 22px",
           }}>
             <span style={{ width: 58, height: 58, borderRadius: 29, background: l.cor, color: COR.texto, display: "grid", placeItems: "center", fontSize: 22, fontWeight: 600 }}>
               {l.nome.split(" ").slice(0, 2).map((p) => p[0]).join("")}
@@ -208,7 +209,7 @@ function CenaKanban() {
       </div>
       <div style={{ position: "absolute", left: 60, right: 60, top: 520, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
         {colunas.map((c, i) => (
-          <div key={c} style={{ background: "rgba(255,255,255,0.05)", border: "2px solid rgba(255,255,255,0.08)", borderRadius: 34, padding: 20, minHeight: 760 }}>
+          <div key={c} style={{ background: "rgba(255,255,255,0.05)", border: "2px solid rgba(255,255,255,0.1)", borderTopColor: "rgba(255,255,255,0.22)", backdropFilter: "blur(24px)", boxShadow: "0 30px 80px rgba(0,0,0,0.35)", borderRadius: 34, padding: 20, minHeight: 760 }}>
             <div style={{ fontSize: 32, fontWeight: 500, color: i === 2 ? COR.lime : "#B9BDC4", marginBottom: 18 }}>{c}</div>
             {Array.from({ length: [3, 2, 1][i] }, (_, j) => (
               <div key={j} style={{ height: 120, borderRadius: 24, background: "rgba(255,255,255,0.08)", marginBottom: 14 }} />
@@ -250,7 +251,7 @@ function CenaMeta() {
       </div>
       <Icone3D arquivo="trofeu" tamanho={420} atraso={1.1} style={{ left: 330, top: 640 }} />
       <Icone3D arquivo="alvo" tamanho={200} atraso={1.3} style={{ left: 120, top: 760 }} />
-      <div style={{ position: "absolute", top: 1220 }}>
+      <div style={{ position: "absolute", top: 1220, left: 90 }}>
         <BarraMeta pct={pct} cor={pct >= 99 ? COR.lime : "#C9CDD3"} />
       </div>
       {confete && Array.from({ length: 26 }, (_, i) => {

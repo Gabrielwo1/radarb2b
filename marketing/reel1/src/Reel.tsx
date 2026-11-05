@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import {
   AbsoluteFill, Audio, Easing, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame,
 } from "remotion";
+import { Cena } from "./Fundo";
 import { MapaRadar } from "./MapaRadar";
 
 // Reel 1 — "O radar". Motion design com o design system do Radar B2B (carvão, lime, vidro, Outfit),
@@ -26,12 +27,12 @@ export const Reel = () => (
     <Audio src={staticFile("audio/narracao.mp3")} />
     <Efeitos />
 
-    <Sequence from={0} durationInFrames={s(T.escuro)}><CenaPergunta /></Sequence>
-    <Sequence from={s(T.escuro)} durationInFrames={s(T.acende - T.escuro)}><CenaEscuro /></Sequence>
-    <Sequence from={s(T.acende)} durationInFrames={s(T.escreve - T.acende)}><CenaRadar /></Sequence>
-    <Sequence from={s(T.escreve)} durationInFrames={s(T.whats - T.escreve)}><CenaChat /></Sequence>
-    <Sequence from={s(T.whats)} durationInFrames={s(T.marca - T.whats)}><CenaWhats /></Sequence>
-    <Sequence from={s(T.marca)}><CenaMarca /></Sequence>
+    <Sequence from={0} durationInFrames={s(T.escuro)}><Cena tipo="problema"><CenaPergunta /></Cena></Sequence>
+    <Sequence from={s(T.escuro)} durationInFrames={s(T.acende - T.escuro)}><Cena tipo="problema"><CenaEscuro /></Cena></Sequence>
+    <Sequence from={s(T.acende)} durationInFrames={s(T.escreve - T.acende)}><Cena tipo="solucao"><CenaRadar /></Cena></Sequence>
+    <Sequence from={s(T.escreve)} durationInFrames={s(T.whats - T.escreve)}><Cena tipo="solucao"><CenaChat /></Cena></Sequence>
+    <Sequence from={s(T.whats)} durationInFrames={s(T.marca - T.whats)}><Cena tipo="solucao"><CenaWhats /></Cena></Sequence>
+    <Sequence from={s(T.marca)}><Cena tipo="solucao"><CenaMarca /></Cena></Sequence>
   </AbsoluteFill>
 );
 
@@ -72,12 +73,15 @@ export function Titulo({ children, atraso = 0, tamanho = 92, cor = "white", styl
   children: ReactNode; atraso?: number; tamanho?: number; cor?: string; style?: CSSProperties;
 }) {
   const frame = useCurrentFrame();
-  const p = ent(frame, atraso);
+  const p = ent(frame, atraso, { damping: 16, stiffness: 110 });
   return (
-    <div style={{
-      fontSize: tamanho, fontWeight: 500, letterSpacing: -2, lineHeight: 1.05, color: cor, textAlign: "center",
-      opacity: p, transform: `translateY(${(1 - p) * 40}px) scale(${0.96 + p * 0.04})`, ...style,
-    }}>{children}</div>
+    <div style={{ overflow: "hidden", padding: "6px 0 14px", ...style }}>
+      <div style={{
+        fontSize: tamanho, fontWeight: 500, letterSpacing: -2, lineHeight: 1.05, color: cor, textAlign: "center",
+        opacity: Math.min(1, p * 1.4), transform: `translateY(${(1 - p) * 110}%)`,
+        textShadow: "0 8px 40px rgba(0,0,0,0.55)",
+      }}>{children}</div>
+    </div>
   );
 }
 
@@ -222,7 +226,7 @@ function CenaChat() {
   const resposta = ent(frame, 2.4);
   const fase2 = frame >= s(T.cidade - T.escreve);
   return (
-    <AbsoluteFill style={{ background: `linear-gradient(180deg, ${COR.carvao} 0%, #1a1c20 100%)` }}>
+    <AbsoluteFill>
       <Brilho x="85%" y="12%" tamanho={600} opacidade={0.16} />
       <AbsoluteFill style={{ alignItems: "center", paddingTop: 170 }}>
         <Titulo tamanho={84}>Você <span style={{ color: COR.lime }}>pergunta.</span></Titulo>
@@ -321,7 +325,7 @@ function CenaWhats() {
       <div style={{ position: "absolute", left: 50, right: 50, top: 1000, display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16,
         opacity: ent(frame, 1.6), transform: `translateY(${(1 - ent(frame, 1.6)) * 80}px)` }}>
         {colunas.map((c, i) => (
-          <div key={c} style={{ background: "rgba(255,255,255,0.06)", border: "2px solid rgba(255,255,255,0.08)", borderRadius: 30, padding: 16, minHeight: 520 }}>
+          <div key={c} style={{ background: "rgba(255,255,255,0.06)", border: "2px solid rgba(255,255,255,0.1)", borderTopColor: "rgba(255,255,255,0.22)", backdropFilter: "blur(24px)", boxShadow: "0 30px 80px rgba(0,0,0,0.35)", borderRadius: 30, padding: 16, minHeight: 520 }}>
             <div style={{ fontSize: 26, color: i === 1 ? COR.lime : "#B9BDC4", marginBottom: 14, fontWeight: 500 }}>{c}</div>
             {Array.from({ length: [3, 1, 2, 1][i] }, (_, j) => (
               <div key={j} style={{ height: 96, borderRadius: 20, background: "rgba(255,255,255,0.09)", marginBottom: 12 }} />
