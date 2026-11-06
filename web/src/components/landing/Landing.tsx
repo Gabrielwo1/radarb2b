@@ -5,8 +5,8 @@ import {
   MapPin, Radar, ShieldCheck, Shapes, Sparkles, Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import type { Busca } from "@/lib/api";
 import retrato from "@/lib/retrato-landing.json";
 import { escala, iniciais, nomeProprio, numero, porcentagem, tituloCidade, tom } from "@/lib/formato";
 import { Celular } from "../automacao/Celular";
@@ -133,105 +133,42 @@ function Nav() {
 // ---------------------------------------------------------------------------
 // Busca ao vivo (dados reais)
 
-type Interpretacao = { filtros: Record<string, string>; resposta: string; entendido: { cidades: string[]; segmentos: { codigo: number; descricao: string }[] } };
 const SUGESTOES = ["Padarias em Recife com WhatsApp", "Clínicas odontológicas em Belo Horizonte", "Vender ração para agropecuárias em Goiás"];
 
+/** Caixa de busca da landing: não pesquisa aqui, leva o texto para o app (visitante vê a prévia e o convite de cadastro). */
 function BuscaAoVivo() {
+  const router = useRouter();
   const [texto, setTexto] = useState("");
-  const [estado, setEstado] = useState<"livre" | "buscando" | "pronto" | "erro">("livre");
-  const [r, setR] = useState<{ i: Interpretacao; busca: Busca; link: string } | null>(null);
-
-  const buscar = async (t: string) => {
+  const [indo, setIndo] = useState(false);
+  const ir = (t: string) => {
     if (!t.trim()) return;
-    setTexto(t);
-    setEstado("buscando");
-    try {
-      const i: Interpretacao = await fetch("/api/interpretar", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ texto: t, uf: "BR" }),
-      }).then((x) => x.json());
-      if (!i.filtros) throw new Error();
-      const q = new URLSearchParams(i.filtros);
-      const api = new URLSearchParams(q);
-      if (api.get("uf") === "BR") api.delete("uf");
-      api.set("limit", "3");
-      const busca: Busca = await fetch(`/api/b2b/empresas?${api}`).then((x) => x.json());
-      setR({ i, busca, link: `/app?${q}` });
-      setEstado("pronto");
-    } catch {
-      setEstado("erro");
-    }
+    setIndo(true);
+    router.push(`/app?busca=${encodeURIComponent(t.trim())}`);
   };
 
   return (
     <div className="mt-7 max-w-xl">
-      <form onSubmit={(e) => { e.preventDefault(); buscar(texto); }}
+      <form onSubmit={(e) => { e.preventDefault(); ir(texto); }}
         className="glass flex items-center gap-2 rounded-full p-1.5 pl-5 focus-within:ring-2 focus-within:ring-ink/10">
         <Sparkles className="size-4 shrink-0 text-ink/40" />
         <input value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Ex.: pet shops em Curitiba com WhatsApp"
           className="h-11 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink/35" />
-        <button type="submit" aria-label="Buscar" disabled={estado === "buscando"}
+        <button type="submit" aria-label="Buscar no app" disabled={indo}
           className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-lime transition hover:scale-105">
-          {estado === "buscando" ? <Loader2 className="size-5 animate-spin" /> : <ArrowUp className="size-5" />}
+          {indo ? <Loader2 className="size-5 animate-spin" /> : <ArrowUp className="size-5" />}
         </button>
       </form>
-
-      {estado === "livre" && (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {SUGESTOES.map((s) => (
-            <button key={s} type="button" onClick={() => buscar(s)}
-              className="rounded-full border border-white bg-white/50 px-3 py-1.5 text-xs text-ink/65 transition hover:bg-white hover:text-ink">
-              {s}
-            </button>
-          ))}
-        </div>
-      )}
-      {estado === "erro" && <p className="mt-3 text-sm text-[#b4232a]">Não consegui buscar agora. Tente de novo em instantes.</p>}
-
-      {estado === "buscando" && <div className="glass skeleton mt-3 h-44 rounded-3xl" />}
-      {estado === "pronto" && r && (
-        <div className="glass mt-3 overflow-hidden rounded-3xl [animation:aparecer_.4s_ease-out]">
-          <div className="flex flex-wrap items-end justify-between gap-3 p-5 pb-3">
-            <div>
-              <p className="text-xs text-muted">Encontramos</p>
-              <p className="text-4xl leading-none tracking-tight"><Contador valor={r.busca.total} formato={escala} /> <span className="text-base text-ink/60">empresas</span></p>
-            </div>
-            <div className="flex flex-wrap justify-end gap-1.5">
-              {r.i.entendido.segmentos.slice(0, 2).map((s) => (
-                <span key={s.codigo} className="flex max-w-[200px] items-center gap-1 truncate rounded-full bg-lime px-2.5 py-1 text-[11px]"><Shapes className="size-3 shrink-0" /><span className="truncate">{s.descricao}</span></span>
-              ))}
-              {r.i.entendido.cidades.slice(0, 1).map((c) => (
-                <span key={c} className="flex items-center gap-1 rounded-full bg-ink px-2.5 py-1 text-[11px] text-white"><MapPin className="size-3" />{tituloCidade(c)}</span>
-              ))}
-            </div>
-          </div>
-          <ul className="divide-y divide-ink/5 border-t border-ink/5">
-            {r.busca.resultados.map((e, i) => (
-              <li key={i} className="flex items-center gap-3 px-5 py-2.5">
-                <span className="grid size-8 shrink-0 place-items-center rounded-full text-[11px] font-semibold" style={{ background: tom(String(i) + (e.razao_social ?? "")) }}>{iniciais(e.nome_fantasia || e.razao_social)}</span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium">{mascararNome(nomeProprio(e.nome_fantasia || e.razao_social))}</span>
-                  <span className="block truncate text-xs text-muted">{e.municipio ? tituloCidade(e.municipio) : ""} · {e.uf}</span>
-                </span>
-                <span className="hidden text-xs tabular-nums text-ink/50 sm:block">{e.telefone1 ? `(${e.telefone1.slice(0, 2)}) ${e.telefone1.slice(2, 3)}••••-••${e.telefone1.slice(-2)}` : ""}</span>
-              </li>
-            ))}
-          </ul>
-          <Link href={r.link} className="flex items-center justify-between bg-ink px-5 py-3.5 text-sm text-white transition hover:bg-coal-2">
-            Ver as {escala(r.busca.total)} empresas no app, com telefone e endereço <ArrowRight className="size-4 text-lime" />
-          </Link>
-        </div>
-      )}
+      <div className="mt-3 flex flex-wrap gap-2">
+        {SUGESTOES.map((s) => (
+          <button key={s} type="button" onClick={() => ir(s)}
+            className="rounded-full border border-white bg-white/50 px-3 py-1.5 text-xs text-ink/65 transition hover:bg-white hover:text-ink">
+            {s}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
-
-/** Página pública: mostra só a primeira palavra do nome (MEIs costumam usar o nome do titular). */
-const mascararNome = (n: string) => {
-  const [primeira, ...resto] = n.split(" ");
-  return resto.length ? `${primeira} ${resto.map((p) => p[0] + "•••").join(" ")}` : primeira;
-};
 
 
 // ---------------------------------------------------------------------------
