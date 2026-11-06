@@ -20,6 +20,15 @@ type Visao = {
   series: Serie[];
   pagamentos: { id: string; tipo: string; valor: number; status: string; metodo: string | null; criado_em: string; email: string }[];
 };
+type Visitas = {
+  hoje: number; visitantes_hoje: number; d7: number; visitantes_7d: number; d30: number; visitantes_30d: number; logados_30d: number;
+  series: { dia: string; visualizacoes: number; visitantes: number }[];
+  paginas: { rotulo: string; valor: number; unicos: number }[];
+  origens: { rotulo: string; valor: number }[];
+  campanhas: { rotulo: string; valor: number }[];
+  dispositivos: { rotulo: string; valor: number }[];
+};
+
 type Conta = {
   id: string; email: string; nome: string | null; telefone: string | null; created_at: string; last_sign_in_at: string | null;
   email_confirmed_at: string | null; plano: string; valido_ate: string | null; recorrente: boolean;
@@ -50,12 +59,14 @@ async function buscar<T>(url: string): Promise<T> {
 export function Painel() {
   const [aba, setAba] = useState<"visao" | "contas">("visao");
   const [visao, setVisao] = useState<Visao | null>(null);
+  const [visitas, setVisitas] = useState<Visitas | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [atualizado, setAtualizado] = useState<Date | null>(null);
 
   const carregar = () => {
     setErro(null);
     buscar<Visao>("/api/admin/painel").then((v) => { setVisao(v); setAtualizado(new Date()); }).catch((e) => setErro(e.message));
+    buscar<Visitas>("/api/admin/visitas").then(setVisitas).catch(() => setVisitas(null));
   };
   useEffect(carregar, []);
 
@@ -81,7 +92,7 @@ export function Painel() {
       </header>
 
       {erro && <p className="rounded-3xl bg-[#fde8e6] p-4 text-sm text-[#9c2b22]">{erro}</p>}
-      {aba === "visao" ? (visao ? <VisaoGeral v={visao} /> : !erro && <div className="glass skeleton h-96 rounded-[var(--radius-card)]" />) : <Contas />}
+      {aba === "visao" ? (visao ? <VisaoGeral v={visao} t={visitas} /> : !erro && <div className="glass skeleton h-96 rounded-[var(--radius-card)]" />) : <Contas />}
     </main>
   );
 }
@@ -89,10 +100,11 @@ export function Painel() {
 // ---------------------------------------------------------------------------
 // Visão geral
 
-function VisaoGeral({ v }: { v: Visao }) {
+function VisaoGeral({ v, t }: { v: Visao; t: Visitas | null }) {
   const pagantes = v.planos.pro_mensal + v.planos.pro_anual + v.planos.empresa;
   return (
     <>
+      {t && <Trafego t={t} cadastros30={v.novas_30d} />}
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Numero rotulo="Contas criadas" valor={numero(v.contas)} sub={`+${v.novas_7d} em 7 dias · +${v.novas_30d} em 30`} />
         <Numero rotulo="Ativos" valor={numero(v.ativos_7d)} sub={`hoje ${v.ativos_hoje} · 30 dias ${v.ativos_30d}`} legenda="últimos 7 dias" />
@@ -154,6 +166,49 @@ function VisaoGeral({ v }: { v: Visao }) {
   );
 }
 
+const PAGINAS_NOMES: Record<string, string> = { "/": "Landing", "/app": "Prospecção", "/crm": "CRM", "/planos": "Planos", "/checkout": "Checkout", "/automacao": "Automação IA", "/entrar": "Entrar" };
+
+function Trafego({ t, cadastros30 }: { t: Visitas; cadastros30: number }) {
+  return (
+    <>
+      <div className="flex items-baseline justify-between">
+        <h2 className="text-lg tracking-tight">Tráfego do site</h2>
+        <p className="text-xs text-muted">visitantes contados por navegador, sem dados pessoais</p>
+      </div>
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Numero rotulo="Visualizações" valor={numero(t.d30)} legenda="30 dias" sub={`hoje ${numero(t.hoje)} · 7 dias ${numero(t.d7)}`} escuro />
+        <Numero rotulo="Visitantes únicos" valor={numero(t.visitantes_30d)} legenda="30 dias" sub={`hoje ${numero(t.visitantes_hoje)} · 7 dias ${numero(t.visitantes_7d)}`} />
+        <Numero rotulo="Páginas por visitante" valor={t.visitantes_30d ? (t.d30 / t.visitantes_30d).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) : "—"} sub="média em 30 dias" />
+        <Numero rotulo="Visitante → cadastro" valor={pct(cadastros30, t.visitantes_30d)} sub={`${cadastros30} cadastros de ${numero(t.visitantes_30d)} visitantes`} />
+      </section>
+      <section className="grid gap-3 lg:grid-cols-2">
+        <Grafico titulo="Visualizações por dia" series={t.series} campo="visualizacoes" />
+        <Grafico titulo="Visitantes únicos por dia" series={t.series} campo="visitantes" />
+      </section>
+      <section className="grid gap-3 lg:grid-cols-3">
+        <Cartao titulo="Páginas mais vistas">
+          {t.paginas.length ? <Barras itens={t.paginas.map((p) => ({ rotulo: PAGINAS_NOMES[p.rotulo] ? `${PAGINAS_NOMES[p.rotulo]} (${p.rotulo})` : p.rotulo, valor: p.valor }))} /> : <Vazio />}
+        </Cartao>
+        <Cartao titulo="De onde vêm (visitantes)">
+          {t.origens.length ? <Barras itens={t.origens} /> : <Vazio />}
+          {t.campanhas.length > 0 && (
+            <div className="mt-4 border-t border-ink/5 pt-3">
+              <p className="mb-2 text-xs text-muted">Campanhas (utm_campaign)</p>
+              <Barras itens={t.campanhas} />
+            </div>
+          )}
+        </Cartao>
+        <Cartao titulo="Dispositivos (visitantes)">
+          {t.dispositivos.length ? <Barras itens={t.dispositivos.map((d) => ({ rotulo: d.rotulo === "mobile" ? "Celular" : d.rotulo === "desktop" ? "Computador" : d.rotulo, valor: d.valor }))} base={t.visitantes_30d} /> : <Vazio />}
+        </Cartao>
+      </section>
+      <h2 className="mt-2 text-lg tracking-tight">Contas e vendas</h2>
+    </>
+  );
+}
+
+const Vazio = () => <p className="text-sm text-muted">Ainda sem visitas registradas.</p>;
+
 function Numero({ rotulo, valor, sub, legenda, escuro }: { rotulo: string; valor: string; sub?: string; legenda?: string; escuro?: boolean }) {
   return (
     <div className={cx("rounded-[var(--radius-card)] p-5", escuro ? "bg-coal text-white" : "glass")}>
@@ -180,7 +235,7 @@ function Status({ s }: { s: string }) {
 
 /** Barras verticais de 30 dias (uma série), com dica ao passar o mouse. */
 function Grafico({ titulo, series, campo, formato = numero }: {
-  titulo: string; series: Serie[]; campo: keyof Omit<Serie, "dia">; formato?: (v: number) => string;
+  titulo: string; series: ({ dia: string } & Record<string, unknown>)[]; campo: string; formato?: (v: number) => string;
 }) {
   const [foco, setFoco] = useState<number | null>(null);
   const valores = series.map((s) => Number(s[campo]));

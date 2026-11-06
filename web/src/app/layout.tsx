@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
+import { Rastreio } from "@/components/Rastreio";
 import { WhatsAppFlutuante } from "@/components/WhatsAppFlutuante";
 import { MetaPixel } from "@/components/MetaPixel";
 
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans">
         {children}
         <WhatsAppFlutuante />
+        <Rastreio />
         <Suspense><MetaPixel /></Suspense>
       </body>
     </html>
