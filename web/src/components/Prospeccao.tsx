@@ -14,7 +14,7 @@ import { abrirPlanos, atualizarConta, tratar402, useConta } from "@/lib/conta";
 import { chaveBusca } from "@/lib/planos";
 import { Creditos } from "./planos/Planos";
 import { ehCelular, escala, linkWhatsApp } from "@/lib/formato";
-import { Assistente, AssistenteLateral, limparConversa, useConversa } from "./Assistente";
+import { Assistente, limparConversa, useConversa } from "./Assistente";
 import { Detalhe } from "./Detalhe";
 import { Filtros, TabFiltros } from "./Filtros";
 import { PainelProspects } from "./Lista";
@@ -240,8 +240,7 @@ export function Prospeccao() {
         </div>
       </div>
 
-      <div id="resultados" className="grid scroll-mt-4 gap-4 xl:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
-      <div className="flex min-w-0 flex-col gap-3">
+      <div id="resultados" className="flex min-w-0 scroll-mt-4 flex-col gap-3">
       <ResumoBusca total={semSalvos ? 0 : busca.dados?.total ?? null} filtros={contarFiltros(sp)} onAjustar={() => { setFiltrosAbertos(() => true); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
       <PainelProspects
         aba={aba}
@@ -277,11 +276,6 @@ export function Prospeccao() {
           />
         )}
       </PainelProspects>
-      </div>
-      {/* Desktop: o chat acompanha a tabela ao rolar, para refinar sem voltar ao topo */}
-      <div className="hidden xl:block">
-        <div className="sticky top-5"><AssistenteLateral {...propsChat} /></div>
-      </div>
       </div>
     </main>
   );
