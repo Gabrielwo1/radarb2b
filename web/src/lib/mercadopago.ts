@@ -44,7 +44,8 @@ export type Pagamento = {
 export const referencia = (user: string, tipo: TipoCompra, chave?: string | null) => `${user}|${tipo}|${chave ?? ""}`;
 export function lerReferencia(ref: string | null | undefined) {
   const [user, tipo, ...resto] = (ref ?? "").split("|");
-  if (!user || !(tipo in PRECOS)) return null;
+  // Só referências do Radar (id de usuário + plano do Radar); as do Fluxa ("empresa|mensal") voltam null
+  if (!/^[0-9a-f-]{36}$/.test(user ?? "") || !(tipo in PRECOS)) return null;
   return { user, tipo: tipo as TipoCompra, chave: resto.join("|") || null };
 }
 
